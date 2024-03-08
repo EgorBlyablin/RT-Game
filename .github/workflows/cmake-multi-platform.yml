@@ -46,6 +46,10 @@ jobs:
 
     - name: Running CppCheck
       uses: deep5050/cppcheck-action@v3.0
+      with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          max_ctu_depth: 10
+          std: c++17
     
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
