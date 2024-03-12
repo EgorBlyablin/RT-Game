@@ -3,13 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Graphics/Renderer.h"
 #include "UI/DebugInfo.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(320, 240), "RTetris");
-    Renderer renderer(&window);
     DebugInfo debugInfo(&window);
 
     while (window.isOpen()) // цикл отрисовки
