@@ -1,4 +1,4 @@
-#include <sstream>
+#include <string>
 
 #include <SFML/Graphics.hpp>
 
@@ -6,9 +6,8 @@
 
 #define DEBUG_TEXT_FONT_SIZE 20
 
-FPS::FPS()
+FPS::FPS() : clock(sf::Clock())
 {
-    clock = sf::Clock();
     clock.restart();
 }
 
@@ -20,22 +19,16 @@ int FPS::get()
     return result;
 }
 
-DebugInfo::DebugInfo(sf::RenderWindow *window)
+DebugInfo::DebugInfo(sf::RenderWindow *window) : font(sf::Font()), fps(FPS())
 {
     this->window = window;
+    font.loadFromFile("./assets/Fonts/Arial.ttf");
 
-    font = sf::Font();
-    font.loadFromFile("Fonts/Arial.ttf");
-
-    fps = FPS();
+    text = sf::Text("", font, DEBUG_TEXT_FONT_SIZE);
 }
 
 void DebugInfo::draw()
 {
-    std::stringstream debugText;
-    debugText << fps.get() << "fps";
-
-    sf::Text text(debugText.str(), font, DEBUG_TEXT_FONT_SIZE);
-
+    text.setString(std::to_string(fps.get()));
     window->draw(text);
 }
