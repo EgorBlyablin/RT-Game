@@ -1,6 +1,8 @@
 #ifndef DEBUG_INFO_H
 #define DEBUG_INFO_H
 
+#include <SFML/Graphics.hpp>
+
 class FPS
 {
 private:
@@ -20,9 +22,10 @@ private:
     FPS fps;
 
     sf::Font font;
+    sf::Text text;
 
 public:
-    DebugInfo(sf::RenderWindow *window);
+    explicit DebugInfo(sf::RenderWindow *window);
 
     void draw();
 };
