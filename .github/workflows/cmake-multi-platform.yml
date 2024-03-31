@@ -53,7 +53,7 @@ jobs:
 
             - name: Dependencies installation
               run: >
-                  sudo apt update
+                  sudo apt update &&
                   sudo apt install \
                       libxrandr-dev \
                       libxcursor-dev \
