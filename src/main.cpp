@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "UI/DebugInfo.h"
+#include <Utilities/DebugInfo.h>
 
 int main()
 {
