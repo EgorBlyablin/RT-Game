@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "DebugInfo.h"
+#include <Utilities/DebugInfo.h>
 
 #define DEBUG_TEXT_FONT_SIZE 20
 
@@ -19,10 +19,10 @@ int FPS::get()
     return result;
 }
 
-DebugInfo::DebugInfo(sf::RenderWindow *window) : font(sf::Font()), fps(FPS())
+DebugInfo::DebugInfo(sf::RenderWindow *window) : fps(FPS()), font(sf::Font())
 {
     this->window = window;
-    font.loadFromFile("./assets/Fonts/Arial.ttf");
+    font.loadFromFile("assets/Fonts/Arial.ttf");
 
     text = sf::Text("", font, DEBUG_TEXT_FONT_SIZE);
 }

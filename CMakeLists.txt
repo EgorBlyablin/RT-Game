@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.22)
 project(RTetris)
 
-include(FetchContent)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_REQUIRED ON)
 
 # SFML Fetch
+message("-- Fetching SFML library")
+include(FetchContent)
 FetchContent_Declare(
     sfml
     GIT_REPOSITORY "https://github.com/SFML/SFML.git"
@@ -11,15 +15,20 @@ FetchContent_Declare(
     GIT_PROGRESS ON
 )
 FetchContent_MakeAvailable(sfml)
+message("-- Fetching SFML library - done")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_REQUIRED ON)
+message("-- Copying assets to the build")
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+message("-- Copying assets to the build - done")
 
-add_executable(RTetris main.cpp)
-add_subdirectory(UI)
+message("-- Including headers directories")
+include_directories(include)
+message("-- Including headers directories - done")
 
-configure_file(assets/Fonts/Arial.ttf assets/Fonts/Arial.ttf COPYONLY)
+message("-- Adding src/*.cpp files to build")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+add_executable(RTetris ${SOURCES})
+message("-- Adding src/*.cpp files to build - done")
 
 target_link_libraries(RTetris
     PUBLIC
@@ -27,7 +36,6 @@ target_link_libraries(RTetris
     sfml-graphics
     sfml-window
     sfml-system
-
-    UI
 )
+
 target_compile_options(RTetris PRIVATE -Wall -Wextra -pedantic)
