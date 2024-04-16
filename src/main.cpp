@@ -1,14 +1,15 @@
 #include <fstream>
 #include <iostream>
+#include <math.h>
 
 #include <SFML/Graphics.hpp>
 
-#include <Utilities/DebugInfo.h>
+#include "Utilities/DebugInfo.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(320, 240), "RTetris");
-    DebugInfo debugInfo(&window);
+    DebugInfo debugInfo;
 
     while (window.isOpen()) // цикл отрисовки
     {
@@ -21,8 +22,8 @@ int main()
 
         window.clear(); // очистка кадра
 
-        debugInfo.draw();
-        // отрисовка следующего кадра
+        debugInfo.update();
+        window.draw(debugInfo); // отрисовка следующего кадра
 
         window.display(); // показ кадра
     }
