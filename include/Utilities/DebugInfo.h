@@ -1,33 +1,29 @@
 #ifndef DEBUG_INFO_H
 #define DEBUG_INFO_H
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 
-class FPS
+#include "../UI/UIElement.h"
+#include "FPSCounter.h"
+
+class DebugInfo : public UIElement
 {
-private:
-    sf::Clock clock;
-
-public:
-    FPS();
-
-    int get();
-};
-
-class DebugInfo
-{
-private:
-    sf::RenderWindow *window;
-
+protected:
     FPS fps;
 
     sf::Font font;
     sf::Text text;
 
 public:
-    explicit DebugInfo(sf::RenderWindow *window);
+    DebugInfo(float x, float y);
+    DebugInfo() : DebugInfo(0, 0) {}
 
-    void draw();
+    void update();
+
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
 #endif
