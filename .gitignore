@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+*.idea/
 
 # CMake
 CMakeLists.txt.user

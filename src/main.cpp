@@ -1,9 +1,15 @@
-#include "Game.h"
+#include "Assets.h"
+#include "GameModel.h"
+#include "GameController.h"
+#include "GameRender.h"
+
 
 int main()
 {
-    Game::init();
-    Game::run();
-
+    Assets::Instance().Load();			// Загружаем ресурсы
+    GameModel game;					// Создаем модель игры
+    GameRender render(&game);			// Создаем представление
+    GameController controller(&game, &render);	// Создаем контроллер
+    controller.Run();				// Запускаем игру
     return 0;
 }
