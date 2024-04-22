@@ -14,17 +14,17 @@ set(IMGUI_VERSION 1.90)
 message("-- Fetching SFML, ImGui and ImGui-SFML libraries")
 
 FetchContent_Declare(
-    sfml
-    URL "https://github.com/SFML/SFML/archive/${SFML_VERSION}.zip"
+        sfml
+        URL "https://github.com/SFML/SFML/archive/${SFML_VERSION}.zip"
 )
 FetchContent_Declare(
-    imgui
-    URL "https://github.com/ocornut/imgui/archive/v${IMGUI_VERSION}.zip"
+        imgui
+        URL "https://github.com/ocornut/imgui/archive/v${IMGUI_VERSION}.zip"
 )
 FetchContent_Declare(
-    imgui-sfml
-    GIT_REPOSITORY "https://github.com/SFML/imgui-sfml.git"
-    GIT_TAG "2.6.x"
+        imgui-sfml
+        GIT_REPOSITORY "https://github.com/SFML/imgui-sfml.git"
+        GIT_TAG "2.6.x"
 )
 
 option(SFML_BUILD_NETWORK "Build network" OFF)
@@ -47,12 +47,12 @@ target_compile_options(RTetris PRIVATE -Wall -Wextra -pedantic)
 
 message("-- Linking external libraries")
 target_link_libraries(RTetris
-    PUBLIC
-    sfml-audio
-    sfml-graphics
-    sfml-window
-    sfml-system
-    ImGui-SFML::ImGui-SFML
+        PUBLIC
+        sfml-audio
+        sfml-graphics
+        sfml-window
+        sfml-system
+        ImGui-SFML::ImGui-SFML
 )
 message("-- Linking external libraries - done")
 
