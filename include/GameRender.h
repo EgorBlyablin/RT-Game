@@ -7,9 +7,10 @@
 
 
 #include <SFML/Graphics.hpp>
+
 #include "GameModel.h"
 
-class GameRender : public sf::Drawable, public sf::Transformable
+class GameRender : public sf::Drawable, sf::Transformable
 {
     GameModel *m_game;
     sf::RenderWindow m_window;
@@ -19,11 +20,11 @@ public:
 
     ~GameRender() override;
 
-    sf::RenderWindow& window() { return m_window; };
+    sf::RenderWindow& getWindow() { return m_window; };
     bool Init();
     void Render();
 public:
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
 

@@ -15,6 +15,7 @@ class GameController
     GameRender *m_render;
 public:
     GameController(GameModel *game, GameRender *render);
+
     void Run();
 
     virtual ~GameController();

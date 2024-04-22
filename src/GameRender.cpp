@@ -10,6 +10,10 @@ GameRender::GameRender(GameModel *game)
     Init();
 }
 
+GameRender::~GameRender() {
+    delete m_game;
+}
+
 bool GameRender::Init()
 {
     setPosition(50.f, 50.f);
@@ -59,8 +63,4 @@ void GameRender::draw(sf::RenderTarget& target, sf::RenderStates states) const
         text.setFillColor(color);
         text.setString(std::to_string(elements[i]));
     }
-}
-
-GameRender::~GameRender() {
-    delete m_game;
 }

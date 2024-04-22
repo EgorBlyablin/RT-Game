@@ -6,7 +6,7 @@
 #define RTETRIS_ASSETS_H
 
 
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 
 class Assets
 {
@@ -22,8 +22,8 @@ public:
         if (!font.loadFromFile("assets/fonts/Arial.ttf")) throw;
     }
 private:
-    Assets() {};
-    ~Assets() {};
+    Assets() = default;
+    ~Assets() = default;
     Assets(Assets const&) = delete;
     Assets& operator= (Assets const&) = delete;
 };
