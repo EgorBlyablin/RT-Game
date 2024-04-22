@@ -8,24 +8,27 @@
 
 #include <SFML/Graphics.hpp>
 
-class Assets
-{
+class Assets {
 public:
     sf::Font font;
 public:
-    static Assets& Instance()
-    {
+    static Assets &Instance() {
         static Assets s;
         return s;
     }
-    void Load(){
-        if (!font.loadFromFile("assets/fonts/Arial.ttf")) throw;
+
+    void Load() {
+        font.loadFromFile("assets/fonts/Arial.ttf");
     }
+
 private:
     Assets() = default;
+
     ~Assets() = default;
-    Assets(Assets const&) = delete;
-    Assets& operator= (Assets const&) = delete;
+
+    Assets(Assets const &) = delete;
+
+    Assets &operator=(Assets const &) = delete;
 };
 
 #endif //RTETRIS_ASSETS_H
