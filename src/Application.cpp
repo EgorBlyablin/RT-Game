@@ -7,9 +7,9 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
 
-#include "Game.h"
+#include "Application.h"
 
-Game::Game()
+Application::Application()
 {
     currentScreen = std::make_unique<Menu>(); // устанавливаем текущим окном экран меню
 
@@ -23,7 +23,7 @@ Game::Game()
     (void)ImGui::SFML::Init(window); // инициализируем ImGui
 }
 
-void Game::handleEvents()
+void Application::handleEvents()
 {
     sf::Event event;
 
@@ -38,13 +38,13 @@ void Game::handleEvents()
     }
 }
 
-void Game::update()
+void Application::update()
 {
     currentScreen->update();
     ImGui::SFML::Update(window, ImGuiClock.restart());
 }
 
-void Game::render()
+void Application::render()
 {
     ImGui::Begin("Developer tools");
     ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate); // выводим число кадров
@@ -59,7 +59,7 @@ void Game::render()
     window.display(); // показываем кадр
 }
 
-void Game::run()
+void Application::run()
 {
     while (window.isOpen()) // цикл отрисовки
     {
