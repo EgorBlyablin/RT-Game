@@ -1,11 +1,11 @@
+#include "Application.h"
 #include "Assets.h"
-#include "Game.h"
 
 int main()
 {
     Assets::getInstance().Load(); // Загружаем ресурсы
-    Game game;                    // Создаем модель игры
-    game.run();                   // Запускаем игру
+    Application app;              // Создаем модель игры
+    app.run();                    // Запускаем приложение
 
     return 0;
 }

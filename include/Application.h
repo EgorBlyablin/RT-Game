@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
@@ -8,7 +8,7 @@
 #include "Screen/Menu.h"
 
 /// @brief Класс приложения
-class Game
+class Application
 {
   private:
     static constexpr float windowSize = 0.7; // начальный размер окна по сравнению с экраном
@@ -19,7 +19,7 @@ class Game
     static inline sf::Clock ImGuiClock{}; // счетчик для ImGui (требуется внутри ImGui)
 
   public:
-    Game(); // инициализация игры
+    Application(); // инициализация игры
 
     void handleEvents(); // обработка пользовательских команд
     void update(); // обновление внутриигровых событий (перемещение мобов и т. п.)
