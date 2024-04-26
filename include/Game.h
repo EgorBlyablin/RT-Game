@@ -4,22 +4,28 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 
+#include "Screen/BaseScreen.h"
+#include "Screen/Menu.h"
+
+/// @brief Класс приложения
 class Game
 {
-private:
+  private:
     static constexpr float windowSize = 0.7; // начальный размер окна по сравнению с экраном
 
-    static inline sf::RenderWindow window; // окно игры
-    static inline sf::Clock ImGuiClock{};  // счетчик для ImGui (требуется внутри ImGui)
+    sf::RenderWindow window; // окно игры
+    std::unique_ptr<BaseScreen> currentScreen;
 
-public:
-    static void init(); // инициализация игры
+    static inline sf::Clock ImGuiClock{}; // счетчик для ImGui (требуется внутри ImGui)
 
-    static void handleEvents(); // обработка пользовательских команд
-    static void update();       // обновление внутриигровых событий (перемещение мобов и т. п.)
-    static void render();       // отрисовка кадра
+  public:
+    Game(); // инициализация игры
 
-    static void run(); // запуск игры (исполнение всех вышеуказанных команд)
+    void handleEvents(); // обработка пользовательских команд
+    void update(); // обновление внутриигровых событий (перемещение мобов и т. п.)
+    void render(); // отрисовка кадра
+
+    void run(); // запуск игры (исполнение всех вышеуказанных команд)
 };
 
 #endif

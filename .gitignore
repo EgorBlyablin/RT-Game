@@ -49,3 +49,6 @@ build/
 
 # VSCode
 .vscode/
+
+# ImGui
+imgui.ini
