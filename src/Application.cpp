@@ -17,11 +17,18 @@ Application::Application()
     sf::Vector2u displaySize = {displayProperties.width, displayProperties.height};
 
     // масштабируем и центрируем окно
-    window.create(sf::VideoMode((unsigned int)(displaySize.x / 1.5), (unsigned int)(displaySize.y / 1.5)), "Game");
+    window.create(sf::VideoMode((unsigned int)(displaySize.x * windowSize), (unsigned int)(displaySize.y * windowSize)), "Game");
     window.setPosition(static_cast<sf::Vector2i>(displaySize) / 2 - static_cast<sf::Vector2i>(window.getSize()) / 2);
 
     (void)ImGui::SFML::Init(window); // инициализируем ImGui
 }
+
+Application &Application::getInstance()
+{
+    static Application app;
+    return app;
+}
+
 
 void Application::handleEvents()
 {
@@ -68,4 +75,8 @@ void Application::run()
         render();
     }
     ImGui::SFML::Shutdown();
+}
+void Application::setCurrentScreen(std::unique_ptr<BaseScreen> &currentScreen)
+{
+    this->currentScreen.swap(currentScreen);
 }

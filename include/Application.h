@@ -18,14 +18,18 @@ class Application
 
     static inline sf::Clock ImGuiClock{}; // счетчик для ImGui (требуется внутри ImGui)
 
-  public:
     Application(); // инициализация игры
+
+  public:
+    static Application& getInstance();
 
     void handleEvents(); // обработка пользовательских команд
     void update(); // обновление внутриигровых событий (перемещение мобов и т. п.)
     void render(); // отрисовка кадра
 
     void run(); // запуск игры (исполнение всех вышеуказанных команд)
+
+    void setCurrentScreen(std::unique_ptr<BaseScreen> &currentScreen);
 };
 
 #endif
