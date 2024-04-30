@@ -42,7 +42,7 @@ jobs:
                   max_ctu_depth: 10
                   std: c++20
                   
-            - name: publish report    
+            - name: Save reports to files    
               uses: mikeal/publish-to-github-action@master
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
