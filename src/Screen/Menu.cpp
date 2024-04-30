@@ -6,7 +6,6 @@
 #include "Assets.h"
 #include "Screen/Menu.h"
 #include "UI/Button.h"
-#include "Screen/Settings.h"
 
 Menu::Menu()
 {
