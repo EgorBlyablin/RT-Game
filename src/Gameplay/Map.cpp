@@ -5,29 +5,28 @@
 #include "Gameplay/Map/Tile.h"
 #include "Gameplay/Map/Tiles/Cliff.h"
 
-#define MAPSIZE 20      // размер игрового поля (ширина и высота)
 #define TILE_SIZE_PX 50 // отображаемый размер клетки на экране (в будущем будет контролироваться камерой)
 
 Map::Map()
 {
-    for (int i = 0; i < MAPSIZE; i++)
-    {
-        tiles.push_back(std::vector<std::unique_ptr<Tile>>());
+    std::shared_ptr<Tile> cliff = std::make_shared<Cliff>(), tile = std::make_shared<Tile>();
 
+    for (int i = 0; i < MAPSIZE; i++)
         for (int j = 0; j < MAPSIZE; j++)
-        {
-            auto tile = (i + j) % 2 ? std::make_unique<Cliff>() : std::make_unique<Tile>();
-            tiles[i].push_back(std::move(tile));
-        }
-    }
+            if ((i + j) % 2)
+                tiles[i][j] = cliff;
+            else
+                tiles[i][j] = tile;
+
+    characters[0][0] = std::make_unique<BaseCharacter>();
 }
 
 void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 
-    for (int i = 0; i < (int)tiles.size(); i++)
-        for (int j = 0; j < (int)tiles[i].size(); j++)
+    for (int i = 0; i < MAPSIZE; i++)
+        for (int j = 0; j < MAPSIZE; j++)
         {
             auto &tile = tiles[i][j]; // получение ссылки на клетку
 
@@ -36,5 +35,20 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
                            (float)TILE_SIZE_PX / tile->getArea().height); // масштабирование клетки
 
             target.draw(*tile, states);
+        }
+
+    for (int i = 0; i < MAPSIZE; i++)
+        for (int j = 0; j < MAPSIZE; j++)
+        {
+            auto &character = characters[i][j]; // получение ссылки на клетку
+
+            if (character != nullptr)
+            {
+                character->setPosition((float)i * TILE_SIZE_PX, (float)j * TILE_SIZE_PX); // установка позиции отрисовки
+                character->setScale((float)TILE_SIZE_PX / character->getArea().width,
+                                    (float)TILE_SIZE_PX / character->getArea().height); // масштабирование клетки
+
+                target.draw(*character, states);
+            }
         }
 }

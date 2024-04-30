@@ -9,10 +9,11 @@
 
 #include "Application.h"
 #include "Screen/Menu.h"
+#include "Screen/Game.h"
 
 Application::Application()
 {
-    currentScreen = std::make_unique<Menu>(); // устанавливаем текущим окном экран меню
+    currentScreen = std::make_unique<Game>(); // устанавливаем текущим окном экран меню
 
     sf::VideoMode displayProperties = sf::VideoMode::getDesktopMode(); // получаем свойства экрана
     sf::Vector2u displaySize = {displayProperties.width, displayProperties.height};

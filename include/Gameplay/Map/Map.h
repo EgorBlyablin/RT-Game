@@ -1,17 +1,21 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <vector>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 
+#include "../Characters/BaseCharacter.h"
 #include "Tile.h"
+
+#define MAPSIZE 20 // размер игрового поля (ширина и высота)
 
 /// @brief Класс игрового поля
 class Map : public sf::Drawable, public sf::Transformable
 {
   private:
-    std::vector<std::vector<std::unique_ptr<Tile>>> tiles; // двумерный вектор умных указателей на клетки
+    std::shared_ptr<Tile> tiles[MAPSIZE][MAPSIZE]; // двумерный вектор умных указателей на клетки
+    std::unique_ptr<BaseCharacter> characters[MAPSIZE][MAPSIZE]; // двумерный вектор умных указателей на персонажей
 
   public:
     Map();
