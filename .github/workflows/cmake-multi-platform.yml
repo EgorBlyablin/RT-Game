@@ -44,6 +44,7 @@ jobs:
             - name: Showing CppCheck report
               shell: bash
               run: |
+                  echo "ls" >> "$GITHUB_OUTPUT"
                   echo "${{ github.workspace }}/cppcheck_report.txt" >> "$GITHUB_OUTPUT"
 
             - name: Dependencies installation
