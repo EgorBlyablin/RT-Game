@@ -13,10 +13,15 @@ class Assets
   public:
     sf::Font font; // шрифт
 
+    sf::Texture defaultTexture, cliffTexture; // текстуры клеток
+
   public:
     void Load() // загрузка ассетов
     {
         font.loadFromFile("assets/fonts/Arial.ttf");
+
+        defaultTexture.loadFromFile("assets/Sprites/Templates/16x16Small.png");
+        cliffTexture.loadFromFile("assets/Sprites/Ground/Cliff.png");
     }
 
     static Assets &getInstance() // получение синглтона
