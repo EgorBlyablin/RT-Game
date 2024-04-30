@@ -8,6 +8,7 @@
 #include <SFML/Window/VideoMode.hpp>
 
 #include "Application.h"
+#include "Screen/Menu.h"
 
 Application::Application()
 {
