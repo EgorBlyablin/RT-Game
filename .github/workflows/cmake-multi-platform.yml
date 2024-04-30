@@ -41,9 +41,9 @@ jobs:
                   max_ctu_depth: 10
                   std: c++20
 
-            - name: Showing CppCheck report
-              run: |
-                  cat ./cppcheck_report.txt >> "$GITHUB_OUTPUT"
+            # - name: Showing CppCheck report
+            #   run: |
+            #       cat ./cppcheck_report.txt >> "$GITHUB_OUTPUT"
 
             - name: Dependencies installation
               run: >
