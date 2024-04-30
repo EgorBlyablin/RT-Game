@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "BaseScreen.h"
-#include "Application.h"
 
 /// @brief Экран меню
 /// @details Этот экран запускается при запуске приложения
