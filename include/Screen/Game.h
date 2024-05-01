@@ -13,6 +13,7 @@ class Game : public BaseScreen
   private:
     std::vector<Button> buttons; // кнопки
 
+    sf::View camera; // игровая камера
     Map map;
 
   public:

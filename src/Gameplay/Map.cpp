@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #include "Assets.h"
@@ -5,7 +7,7 @@
 #include "Gameplay/Map/Tile.h"
 #include "Gameplay/Map/Tiles/Cliff.h"
 
-#define TILE_SIZE_PX 50 // отображаемый размер клетки на экране (в будущем будет контролироваться камерой)
+#define TILE_SIZE_PX 16 // количество пикселей в одной клетке (определяется спрайтами)
 
 Map::Map()
 {
@@ -25,8 +27,21 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 
-    for (int i = 0; i < MAPSIZE; i++)
-        for (int j = 0; j < MAPSIZE; j++)
+    auto &camera = target.getView(); // получение игровой камеры
+
+    sf::IntRect cameraViewCoordinates(
+        (int)((camera.getCenter() - (camera.getSize() / 2.f)).x),
+        (int)((camera.getCenter() - (camera.getSize() / 2.f)).y),
+        (int)((camera.getCenter() + (camera.getSize() / 2.f)).x),
+        (int)((camera.getCenter() + (camera.getSize() / 2.f)).y)); // положение камеры в игровом мире
+
+    int leftTileToDraw = std::max(0, cameraViewCoordinates.left / TILE_SIZE_PX),
+        topTileToDraw = std::max(0, cameraViewCoordinates.top / TILE_SIZE_PX),
+        rightTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.width / TILE_SIZE_PX + 1),
+        bottomTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.height / TILE_SIZE_PX + 1); // крайние клетки для отрисовки (оптимизация, чтобы отрисовывать только видимые клетки)
+
+    for (int i = leftTileToDraw; i < rightTileToDraw; i++)
+        for (int j = topTileToDraw; j < bottomTileToDraw; j++)
         {
             auto &tile = tiles[i][j]; // получение ссылки на клетку
 
@@ -37,8 +52,8 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
             target.draw(*tile, states);
         }
 
-    for (int i = 0; i < MAPSIZE; i++)
-        for (int j = 0; j < MAPSIZE; j++)
+    for (int i = leftTileToDraw; i < rightTileToDraw; i++)
+        for (int j = topTileToDraw; j < bottomTileToDraw; j++)
         {
             auto &character = characters[i][j]; // получение ссылки на клетку
 
