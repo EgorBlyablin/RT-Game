@@ -5,6 +5,7 @@
 
 #include "BaseScreen.h"
 #include "Gameplay/Map/Map.h"
+#include "Gameplay/Camera.h"
 #include "UI/Button.h"
 
 /// @brief Класс игры
@@ -13,8 +14,8 @@ class Game : public BaseScreen
   private:
     std::vector<Button> buttons; // кнопки
 
-    sf::View camera; // игровая камера
     Map map;
+    Camera camera;
 
   public:
     Game();
