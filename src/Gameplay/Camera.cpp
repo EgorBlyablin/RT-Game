@@ -31,11 +31,11 @@ void Camera::update() // обновление состояний игры
         // проверяем, что при смещении прямоугольник камеры не выйдет за края игрового поля
         // проверка положительного и отрицательного смещения проводится для того, чтобы в случае, если камера ошибочно
         // окажется за пределами игрового поля, она смогла вернуться в его пределы
-        if (((offset.x > 0) and (center.x - (size.x / 2) + offset.x <= mapWidth)) or
-            ((offset.x < 0) and (center.x + (size.x / 2) + offset.x >= 0)))
+        if (((offset.x > 0) and (center.x + (size.x / 2) + offset.x <= mapWidth)) or
+            ((offset.x < 0) and (center.x - (size.x / 2) + offset.x >= 0)))
             center.x += offset.x;
-        if (((offset.y > 0) and (center.y - (size.y / 2) + offset.y <= mapHeight)) or
-            ((offset.y < 0) and (center.y + (size.y / 2) + offset.y >= 0)))
+        if (((offset.y > 0) and (center.y + (size.y / 2) + offset.y <= mapHeight)) or
+            ((offset.y < 0) and (center.y - (size.y / 2) + offset.y >= 0)))
             center.y += offset.y;
         setCenter(center);
     }
