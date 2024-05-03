@@ -4,14 +4,12 @@
 
 #include "Assets.h"
 #include "Gameplay/Map/Map.h"
-#include "Gameplay/Map/Tile.h"
+#include "Gameplay/Map/Tiles/BaseTile.h"
 #include "Gameplay/Map/Tiles/Cliff.h"
-
-#define TILE_SIZE_PX 16 // количество пикселей в одной клетке (определяется спрайтами)
 
 Map::Map()
 {
-    std::shared_ptr<Tile> cliff = std::make_shared<Cliff>(), tile = std::make_shared<Tile>();
+    std::shared_ptr<BaseTile> cliff = std::make_shared<Cliff>(), tile = std::make_shared<BaseTile>();
 
     for (int i = 0; i < MAPSIZE; i++)
         for (int j = 0; j < MAPSIZE; j++)

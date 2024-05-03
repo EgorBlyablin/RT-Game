@@ -1,11 +1,11 @@
-#include "Gameplay/Map/Tile.h"
+#include "Gameplay/Map/Tiles/BaseTile.h"
 
-sf::IntRect Tile::getArea() const
+sf::IntRect BaseTile::getArea() const
 {
     return area;
 }
 
-void Tile::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void BaseTile::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 

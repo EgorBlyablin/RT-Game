@@ -3,11 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../Tile.h"
 #include "Assets.h"
+#include "BaseTile.h"
 
 /// @brief Класс земли
-class Cliff : public Tile
+class Cliff : public BaseTile
 {
   private:
     const sf::Texture &texture = Assets::getInstance().cliffTexture;
