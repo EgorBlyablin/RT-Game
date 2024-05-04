@@ -29,7 +29,7 @@ class Application
 
     void run(); // запуск игры (исполнение всех вышеуказанных команд)
 
-    void setCurrentScreen(std::unique_ptr<BaseScreen> &currentScreen);
+    void setCurrentScreen(BaseScreen* newScreen);
 };
 
 #endif

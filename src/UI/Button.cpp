@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "UI/Button.h"
+#include "Application.h"
+#include "Screen/Settings.h"
 
 Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &text, const sf::Font &font,
                const unsigned int characterSize, std::function<void(void)> callback)

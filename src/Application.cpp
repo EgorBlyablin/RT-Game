@@ -76,7 +76,7 @@ void Application::run()
     }
     ImGui::SFML::Shutdown();
 }
-void Application::setCurrentScreen(std::unique_ptr<BaseScreen> &currentScreen)
+void Application::setCurrentScreen(BaseScreen* newScreen)
 {
-    this->currentScreen.swap(currentScreen);
+    this->currentScreen.reset(newScreen);
 }
