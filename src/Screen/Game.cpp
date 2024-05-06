@@ -12,6 +12,7 @@ void Game::handleEvent(const sf::Event &event) // обработка событ�
 void Game::update() // обновление состояний игры
 {
     camera.update();
+    map.update();
 }
 
 void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const

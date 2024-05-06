@@ -21,6 +21,14 @@ Map::Map()
     characters[0][0] = std::make_unique<BaseCharacter>();
 }
 
+void Map::update()
+{
+    for (int i = 0; i < MAPSIZE; i++)
+        for (int j = 0; j < MAPSIZE; j++)
+            if (characters[i][j] != nullptr)
+                characters[i][j]->update();
+}
+
 void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
@@ -36,7 +44,9 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
     int leftTileToDraw = std::max(0, cameraViewCoordinates.left / TILE_SIZE_PX),
         topTileToDraw = std::max(0, cameraViewCoordinates.top / TILE_SIZE_PX),
         rightTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.width / TILE_SIZE_PX + 1),
-        bottomTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.height / TILE_SIZE_PX + 1); // крайние клетки для отрисовки (оптимизация, чтобы отрисовывать только видимые клетки)
+        bottomTileToDraw = std::min(
+            MAPSIZE, cameraViewCoordinates.height / TILE_SIZE_PX +
+                         1); // крайние клетки для отрисовки (оптимизация, чтобы отрисовывать только видимые клетки)
 
     for (int i = leftTileToDraw; i < rightTileToDraw; i++)
         for (int j = topTileToDraw; j < bottomTileToDraw; j++)

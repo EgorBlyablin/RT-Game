@@ -22,6 +22,8 @@ class Map : public sf::Drawable, public sf::Transformable
   public:
     Map();
 
+    void update(); // обновление состояний переменных
+
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override; // отрисовка поля
 };
 

@@ -1,13 +1,15 @@
 #ifndef BASE_CHARACTERS_H
 #define BASE_CHARACTERS_H
 
+#include <map>
+
 #include <SFML/Graphics.hpp>
 
 #include "../../Assets.h"
 
 class BaseCharacter : public sf::Drawable, public sf::Transformable
 {
-    enum class Direction
+    enum class Direction // направление взгляда
     {
         Down,
         Up,
@@ -15,23 +17,33 @@ class BaseCharacter : public sf::Drawable, public sf::Transformable
         Left
     };
 
-    enum class Action
+    enum class Action // текущее действие
     {
         Idle,
         Walk,
         Attack
     };
 
+    std::map<Action, sf::Time> animationTimeout{
+        {Action::Idle, sf::milliseconds(1000)},
+        {Action::Walk, sf::milliseconds(200)},
+        {Action::Attack, sf::milliseconds(100)}}; // время перехода к следующему кадру анимации
+
   private:
-    const sf::Texture &texture = Assets::getInstance().defaultTexture;
+    const sf::Texture &texture = Assets::getInstance().defaultCharacter;
+    sf::IntRect area; // участок текстуры для отрисовки
 
     Direction direction = Direction::Down;
     Action action = Action::Idle;
-    int actionFrame = 0;
+
+    unsigned int animationFrame = 0;
+    sf::Clock animationClock;
 
   public:
-    BaseCharacter() = default;
+    BaseCharacter();
     ~BaseCharacter() = default; // требуется для умного указателя
+
+    virtual void update(); // обновление состояний
 
     virtual sf::IntRect getArea() const; // получение области текстуры - требуется для масштабирования
 
