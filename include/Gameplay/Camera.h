@@ -6,13 +6,21 @@
 /// @brief Класс камеры
 class Camera : public sf::View
 {
+  private:
+    sf::Vector2f mapSize;
+
+    float zoom, minZoom, maxZoom, zoomDelta;
+
+    void zoomIn(); // увеличение масштаба
+    void zoomOut(); // уменьшение масштаба
+
   public:
     /// @brief Инициализация камеры
-    /// @param maxWidth ширина области камеры
-    /// @param maxHeight высота области камеры
-    /// @details Переданные аргументы определяют размеры прямоугольника области видимости игрового поля, которая
-    /// впоследствии будет растянута на весь экран
-    Camera(int maxWidth, int maxHeight);
+    /// @param mapSize размер игрового поля
+    /// @param zoom приближение камеры - которая часть всего поля видна пользователю
+    /// @param minZoom минимальное приближение камеры
+    /// @param maxZoom максимальное приближение камеры
+    Camera(sf::Vector2f mapSize, float zoom, float minZoom, float maxZoom, float zoomDelta);
 
     void handleEvent(const sf::Event &event); // обработка событий
     void update();                            // обновление состояния

@@ -1,6 +1,6 @@
 #include "Screen/Game.h"
 
-Game::Game() : map(), camera()
+Game::Game() : map(), camera(sf::Vector2f(MAPSIZE * TILE_SIZE_PX, MAPSIZE * TILE_SIZE_PX), 1.f, 1.f, 10.f, 1.1f)
 {
 }
 
