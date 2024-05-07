@@ -5,7 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../Characters/BaseCharacter.h"
+#include "Gameplay/Map/Characters/BaseCharacter.h"
 #include "Tiles/BaseTile.h"
 
 #define TILE_SIZE_PX 16 // количество пикселей в одной клетке (определяется спрайтами)

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Gameplay/Characters/BaseCharacter.h"
+#include "Gameplay/Map/Characters/BaseCharacter.h"
 
 #define SPRITE_SIZE_PX 16
 

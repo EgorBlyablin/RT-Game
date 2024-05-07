@@ -5,7 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../../Assets.h"
+#include "Assets.h"
 
 class BaseCharacter : public sf::Drawable, public sf::Transformable
 {
