@@ -80,3 +80,7 @@ void Application::setCurrentScreen(BaseScreen* newScreen)
 {
     this->currentScreen.reset(newScreen);
 }
+const sf::RenderWindow &Application::getWindow() const
+{
+    return window;
+}

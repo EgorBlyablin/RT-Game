@@ -23,8 +23,9 @@ Menu::Menu()
         sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Settings", Assets::getInstance().font, 30, []()
         {
             auto s = new Settings();
-            Application::getInstance().setCurrentScreen(s);
             Menu::setMenuActive(false);
+            Application::getInstance().setCurrentScreen(s);
+
         });
     settingsButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     settingsButton->setTextColor(sf::Color(255, 255, 255));

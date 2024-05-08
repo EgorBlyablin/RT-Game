@@ -3,11 +3,11 @@
 //
 #include <iostream>
 
-#include "Screen/Settings.h"
+#include "Application.h"
 #include "Assets.h"
 #include "Screen/Menu.h"
-#include "Application.h"
-
+#include "Screen/Settings.h"
+#include "UI/SwitchButton.h"
 
 bool Settings::settingsActive = false;
 
@@ -25,8 +25,12 @@ Settings::Settings()
     exitButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     exitButton->setTextColor(sf::Color(255, 255, 255));
 
-    std::unique_ptr<Button> resolutionButton = std::make_unique<Button>(
-        sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Resolution", Assets::getInstance().font, 30, [] { std::cout << "resolution\n"; });
+    std::map<std::string, std::function<void(void )>> callBacks{
+        {"1", []{std::cout<<1<<'\n';}}, {"2", []{std::cout<<2<<'\n';}}, {"3", []{std::cout<<3<<'\n';}}
+    };
+
+    std::unique_ptr<Button> resolutionButton = std::make_unique<SwitchButton>(
+        sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Resolution", Assets::getInstance().font, 30, callBacks);
     resolutionButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     resolutionButton->setTextColor(sf::Color(255, 255, 255));
 

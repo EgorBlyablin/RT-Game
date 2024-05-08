@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
+
 /// @brief Класс кнопки
 /// @details Выполняет отрисовку кнопки в соответствии с ее состоянием,
 /// изменяет ее состояние в соответствии с событиями,
@@ -18,6 +19,9 @@ class Button : public sf::Drawable, public sf::Transformable
     bool isPressed = false; // состояние нажатия
     bool isHovered = false; // состояние наведения
 
+    bool isDisable = false;
+
+  protected:
     sf::Color backgroundColor{127, 127, 127};     // стандартный цвет фона кнопки
     sf::Color backgroundColorOnClick{32, 32, 32}; // цвет при нажатии
     sf::Color backgroundColorOnHover{64, 64, 64}; // цвет при наведении
@@ -51,13 +55,15 @@ class Button : public sf::Drawable, public sf::Transformable
     void setTextColor(const sf::Color &color, const sf::Color &onClick); // установка цвета текста
     void setTextColor(const sf::Color &color);                           // установка цвета текста
 
-    void updateColor(); // обновление текущих цветов в соответствии с состоянием
+    virtual void updateColor(); // обновление текущих цветов в соответствии с состоянием
 
     /// @brief Установка положения кнопки
     /// @param position позиция верхнего левого края кнопки
-    void setPosition(sf::Vector2f position);
+    virtual void setPosition(sf::Vector2f position);
 
-    void handleEvent(const sf::Event &event);                                   // обработка событий
+    void setIsDisable(bool isDisable);
+
+    virtual void handleEvent(const sf::Event &event);                                   // обработка событий
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const; // отрисовка кнопки
 };
 
