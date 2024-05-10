@@ -3,9 +3,11 @@
 
 #include <vector>
 
-#include "BaseScreen.h"
-#include "Gameplay/Map/Map.h"
+#include <SFML/System/Vector2.hpp>
+
 #include "Gameplay/Camera.h"
+#include "Gameplay/Map.h"
+#include "Screen/BaseScreen.h"
 #include "UI/Button.h"
 
 /// @brief Класс игры
@@ -14,11 +16,11 @@ class Game : public BaseScreen
   private:
     std::vector<Button> buttons; // кнопки
 
-    Map map;
-    Camera camera;
+    Map map;       // игровое поле
+    Camera camera; // камера
 
   public:
-    Game();
+    Game(sf::Vector2f windowSize);
 
     virtual void handleEvent(const sf::Event &event) override;
     virtual void update() override;

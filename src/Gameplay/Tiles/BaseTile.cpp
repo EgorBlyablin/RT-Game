@@ -1,4 +1,4 @@
-#include "Gameplay/Map/Tiles/BaseTile.h"
+#include "Gameplay/Tiles/BaseTile.h"
 
 sf::IntRect BaseTile::getArea() const
 {

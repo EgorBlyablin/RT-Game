@@ -4,22 +4,26 @@
 
 #include "Gameplay/Camera.h"
 
-Camera::Camera(sf::Vector2f mapSize, float zoom, float minZoom, float maxZoom, float zoomDelta)
-    : mapSize(mapSize), zoom(zoom), minZoom(minZoom), maxZoom(maxZoom), zoomDelta(zoomDelta)
+Camera::Camera(sf::Vector2f mapSize, float zoom, float minZoom, float maxZoom, float zoomDelta, sf::Vector2f windowSize)
+    : mapSize(mapSize), zoom(zoom), minZoom(minZoom), maxZoom(maxZoom), zoomDelta(zoomDelta), windowSize(windowSize)
 {
     // проверка корректности переданных параметров (отключаются в Release-режиме)
     assert(minZoom < maxZoom);
     assert((minZoom <= zoom) && (zoom <= maxZoom));
     assert(zoomDelta > 1);
 
-    reset(sf::FloatRect(sf::Vector2f(0, 0), mapSize / zoom)); // установка отрисовываемой зоны
+    reset(sf::FloatRect(
+        sf::Vector2f(0, 0),
+        sf::Vector2f(mapSize.x / zoom,
+                     (mapSize.y / zoom) * (windowSize.y / windowSize.x)))); // установка отрисовываемой зоны
 }
 
 void Camera::zoomIn()
 {
     zoom = std::min(zoom * zoomDelta, maxZoom);
 
-    setSize(mapSize / zoom); // установка отрисовываемой зоны
+    setSize(sf::Vector2f(mapSize.x / zoom,
+                         (mapSize.y / zoom) * (windowSize.y / windowSize.x))); // установка отрисовываемой зоны
     // в данном случае проверки не нужны, т. к. при приближении камеры она никогда не выйдет за края игрового поля
 }
 
@@ -27,7 +31,7 @@ void Camera::zoomOut()
 {
     zoom = std::max(zoom / zoomDelta, minZoom);
 
-    sf::Vector2f newSize = mapSize / zoom;
+    sf::Vector2f newSize = sf::Vector2f(mapSize.x / zoom, (mapSize.y / zoom) * (windowSize.y / windowSize.x));
 
     sf::FloatRect cameraRectangle(getCenter() - newSize / 2.f, newSize);
 
@@ -44,8 +48,32 @@ void Camera::zoomOut()
     reset(cameraRectangle);
 }
 
+sf::Vector2u Camera::mapCoordsToPixel(const sf::Vector2u &point) const // перевод координат камеры в координаты мира
+{
+    // смещение левого верхнего угла камеры от начала координат
+    sf::Vector2f offset(getCenter().x - getSize().x / 2, getCenter().y - getSize().y / 2);
+    // масштабирование области видимости камеры к размерам приложения
+    sf::Vector2f viewScale(getWindowSize().x / getSize().x, getWindowSize().y / getSize().y);
+
+    sf::Vector2u pixelPosition(point.x / viewScale.x + offset.x, point.y / viewScale.y + offset.y);
+    return pixelPosition;
+}
+
+float Camera::getZoom() const
+{
+    return zoom;
+}
+
+sf::Vector2f Camera::getWindowSize() const
+{
+    return windowSize;
+}
+
 void Camera::handleEvent(const sf::Event &event) // обработка событий камеры
 {
+    if (event.type == sf::Event::Resized)
+        windowSize = sf::Vector2f(event.size.width, event.size.height);
+
     if (event.type == sf::Event::KeyPressed)
     {
         switch (event.key.code)
