@@ -29,7 +29,7 @@ Settings::Settings()
         {"1", []{std::cout<<1<<'\n';}}, {"2", []{std::cout<<2<<'\n';}}, {"3", []{std::cout<<3<<'\n';}}
     };
 
-    std::unique_ptr<Button> resolutionButton = std::make_unique<SwitchButton>(
+    std::unique_ptr<SwitchButton> resolutionButton = std::make_unique<SwitchButton>(
         sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Resolution", Assets::getInstance().font, 30, callBacks);
     resolutionButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     resolutionButton->setTextColor(sf::Color(255, 255, 255));
@@ -68,10 +68,3 @@ void Settings::setSettingsActive(bool active)
 {
     Settings::settingsActive = active;
 }
-
-//для того, чтобы поменять currentScreen класса Application,
-//в классе menu надо как то передать объект класса Application в конструктор класса Settings
-//либо же сделать Application singleton.
-//но все равно остается проблема с тем, что в конструктор Button передается лямбда - выражение, которое
-//не использует никаких параметров, то есть его фукнционал крайне зажат.
-//Можно сделать класс Button шаблонным.
