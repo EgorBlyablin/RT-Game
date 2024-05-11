@@ -1,4 +1,4 @@
-#include "Gameplay/Map/Tiles/Cliff.h"
+#include "Gameplay/Tiles/Cliff.h"
 
 sf::IntRect Cliff::getArea() const
 {

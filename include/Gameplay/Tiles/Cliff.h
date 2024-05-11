@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Assets.h"
-#include "BaseTile.h"
+#include "Gameplay/Tiles/BaseTile.h"
 
 /// @brief Класс земли
 class Cliff : public BaseTile
