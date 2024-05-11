@@ -5,7 +5,6 @@
 #include <SFML/System/Clock.hpp>
 
 #include "Screen/BaseScreen.h"
-#include "Screen/Menu.h"
 
 /// @brief Класс приложения
 class Application

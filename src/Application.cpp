@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 
 #include <imgui-SFML.h>
@@ -8,11 +9,11 @@
 #include <SFML/Window/VideoMode.hpp>
 
 #include "Application.h"
+#include "Screen/Game.h"
+#include "Screen/Menu.h"
 
-Application::Application()
+Application::Application() : currentScreen(std::make_unique<Menu>())
 {
-    currentScreen = std::make_unique<Menu>(); // устанавливаем текущим окном экран меню
-
     sf::VideoMode displayProperties = sf::VideoMode::getDesktopMode(); // получаем свойства экрана
     sf::Vector2u displaySize = {displayProperties.width, displayProperties.height};
 
