@@ -30,7 +30,7 @@ class Application
     void run(); // запуск игры (исполнение всех вышеуказанных команд)
 
     void setCurrentScreen(BaseScreen* newScreen);
-    const sf::RenderWindow &getWindow() const;
+    void setWindow(sf::VideoMode mode);
 };
 
 #endif

@@ -80,7 +80,7 @@ void Application::setCurrentScreen(BaseScreen* newScreen)
 {
     this->currentScreen.reset(newScreen);
 }
-const sf::RenderWindow &Application::getWindow() const
+void Application::setWindow(sf::VideoMode mode)
 {
-    return window;
+    window.create(mode, "Game");
 }

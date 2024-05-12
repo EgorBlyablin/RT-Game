@@ -11,6 +11,8 @@ SwitchButton::SwitchButton(const sf::Vector2f &position, const sf::Vector2f &siz
                            const unsigned int characterSize,const std::map<std::string, std::function<void(void)>> &callbacks) : callbacks(callbacks)
 {
 
+
+
     this->choice = this->callbacks.begin();
 
 
@@ -24,7 +26,7 @@ SwitchButton::SwitchButton(const sf::Vector2f &position, const sf::Vector2f &siz
 
     this->infoText.setString(this->callbacks.begin()->first);
     this->infoText.setFont(font);
-    this->infoText.setCharacterSize(characterSize-3);
+    this->infoText.setCharacterSize(characterSize-6);
 
 
     info.setPosition(sf::Vector2f(position.x+size.x/2+26, position.y)); // позиционирование заднего фона(делается здесь для учета заданного размера кнопки)

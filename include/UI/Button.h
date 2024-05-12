@@ -65,6 +65,9 @@ class Button : public sf::Drawable, public sf::Transformable
 
     virtual void handleEvent(const sf::Event &event);                                   // обработка событий
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const; // отрисовка кнопки
+
+    virtual void apply();
+
 };
 
 #endif

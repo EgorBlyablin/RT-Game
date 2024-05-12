@@ -134,4 +134,4 @@ void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(shape, states);
     target.draw(text, states);
 }
-
+void Button::apply(){}

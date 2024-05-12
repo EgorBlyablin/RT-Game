@@ -20,6 +20,8 @@ class Settings: public BaseScreen
 
     static bool isSettingsActive();
     static void setSettingsActive(bool settingsActive);
+
+    void apply();
 };
 
 #endif // RTETRIS_SETTINGS_H

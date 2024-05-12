@@ -26,16 +26,32 @@ Settings::Settings()
     exitButton->setTextColor(sf::Color(255, 255, 255));
 
     std::map<std::string, std::function<void(void )>> callBacks{
-        {"1", []{std::cout<<1<<'\n';}}, {"2", []{std::cout<<2<<'\n';}}, {"3", []{std::cout<<3<<'\n';}}
+        {"640x350", []{
+             Application::getInstance().setWindow(sf::VideoMode(640, 350));
+         }},
+        {"880x600", []{
+             Application::getInstance().setWindow(sf::VideoMode(880, 600));
+         }},
+        {"1024x768", []{
+             Application::getInstance().setWindow(sf::VideoMode(1024, 768));
+         }}
     };
-
     std::unique_ptr<SwitchButton> resolutionButton = std::make_unique<SwitchButton>(
         sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Resolution", Assets::getInstance().font, 30, callBacks);
     resolutionButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     resolutionButton->setTextColor(sf::Color(255, 255, 255));
 
+    std::unique_ptr<Button> applyButton = std::make_unique<Button>(
+        sf::Vector2f(300, 0), sf::Vector2f(200, 50), "Apply", Assets::getInstance().font, 30, [this]
+        {
+            this->apply();
+        });
+    exitButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
+    exitButton->setTextColor(sf::Color(255, 255, 255));
+
     buttons.push_back(std::move(exitButton));
-    buttons.push_back(std::move(resolutionButton)); // std::move обязателен для передачи умного указателя в вектор
+    buttons.push_back(std::move(resolutionButton));
+    buttons.push_back(std::move(applyButton));
 }
 
 void Settings::handleEvent(const sf::Event &event)
@@ -58,7 +74,9 @@ void Settings::draw(sf::RenderTarget &target, sf::RenderStates states) const
     states.transform *= getTransform(); // учет трансформаций экрана при отрисовке всех ее элементов
 
     for (auto &button : buttons) // отрисовка всех кнопок
+    {
         target.draw(*button, states);
+    }
 }
 bool Settings::isSettingsActive()
 {
@@ -67,4 +85,11 @@ bool Settings::isSettingsActive()
 void Settings::setSettingsActive(bool active)
 {
     Settings::settingsActive = active;
+}
+void Settings::apply()
+{
+    for (auto &button:buttons)
+    {
+        button->apply();
+    }
 }
