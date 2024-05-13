@@ -13,7 +13,7 @@ class Assets
   public:
     sf::Font font; // шрифт
 
-    sf::Texture defaultTexture, defaultCharacter, cliffTexture; // текстуры
+    sf::Texture defaultTexture, defaultCharacter, defaultBuilding, cliffTexture; // текстуры
 
   public:
     void Load() // загрузка ассетов
@@ -22,6 +22,7 @@ class Assets
 
         defaultTexture.loadFromFile("assets/Sprites/Templates/16x16Small.png");
         defaultCharacter.loadFromFile("assets/Sprites/Characters/Workers/FarmerTemplate.png");
+        defaultBuilding.loadFromFile("assets/Sprites/Buildings/Wood/Houses.png");
 
         cliffTexture.loadFromFile("assets/Sprites/Ground/Cliff.png");
     }

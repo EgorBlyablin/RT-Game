@@ -7,9 +7,11 @@
 
 #define SPRITE_SIZE_PX 16
 
+/// @brief Базовый класс любого юнита (персонажа/строения)
 class BaseUnit : public sf::Drawable, public sf::Transformable
 {
   protected:
+    unsigned int hp;
     sf::Vector2u position; // позиция в клеточном поле
 
     const sf::Texture &texture = Assets::getInstance().defaultTexture;

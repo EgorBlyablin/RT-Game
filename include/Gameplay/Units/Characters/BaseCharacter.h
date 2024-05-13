@@ -10,6 +10,7 @@
 
 #include "Gameplay/Units/BaseUnit.h"
 
+/// @brief Базовый класс персонажа
 class BaseCharacter : public BaseUnit
 {
   protected:
@@ -33,6 +34,7 @@ class BaseCharacter : public BaseUnit
         {Action::Walk, sf::milliseconds(200)},
         {Action::Attack, sf::milliseconds(100)}}; // время перехода к следующему кадру анимации
 
+    unsigned int hp = 100;
     float speed = 3.f; // скорость перемещения - число проходимых за секунду клеток
 
     const sf::Texture &texture = Assets::getInstance().defaultCharacter;
