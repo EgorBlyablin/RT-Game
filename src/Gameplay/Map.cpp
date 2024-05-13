@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
+#include <typeinfo>
 
 #include "Gameplay/Map.h"
 #include "Gameplay/Tiles/Cliff.h"
@@ -46,19 +47,20 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
     {
         sf::Vector2u tileIndex = getTileIndex(sf::Vector2u(event.mouseButton.x, event.mouseButton.y), camera);
 
-        if (cursor == nullptr) // установка курсора
+        if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
             auto it = std::find_if(units.begin(), units.end(),
                                    [&tileIndex](auto &unit) { return tileIndex == unit->getPosition(); });
 
             if (it != units.end())
                 cursor = &(*it);
+            else
+                cursor = nullptr;
         }
-        else // команда выбранному существу
-        {
-            if (isTileFree(tileIndex))
+
+        if (event.mouseButton.button == sf::Mouse::Button::Right) // команда выбранному существу
+            if (cursor != nullptr and isTileFree(tileIndex))
                 (*cursor)->moveTo(tileIndex, [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
-        }
     }
 }
 

@@ -1,6 +1,8 @@
 #ifndef BASE_UNIT_H
 #define BASE_UNIT_H
 
+#include <functional>
+
 #include <SFML/Graphics.hpp>
 
 #include "Assets.h"
@@ -20,6 +22,9 @@ class BaseUnit : public sf::Drawable, public sf::Transformable
   public:
     BaseUnit(sf::Vector2u position);
     ~BaseUnit() = default; // требуется для умного указателя
+
+    virtual void moveTo(sf::Vector2u targetPosition,
+                        std::function<bool(sf::Vector2u)> isTileFree) = 0; // перемещение в указанную позицию
 
     sf::Vector2u getPosition() const;
     void setPosition(sf::Vector2u position);

@@ -52,7 +52,7 @@ class BaseCharacter : public BaseUnit
     ~BaseCharacter() = default; // требуется для умного указателя
 
     virtual void moveTo(sf::Vector2u targetPosition,
-                        std::function<bool(sf::Vector2u)> isTileFree); // перемещение в указанную позицию
+                        std::function<bool(sf::Vector2u)> isTileFree) override; // перемещение в указанную позицию
 
     virtual float getSpeed() const;
     virtual void setSpeed(float speed);
