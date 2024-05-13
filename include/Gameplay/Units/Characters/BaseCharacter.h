@@ -20,6 +20,14 @@ class BaseCharacter : public BaseUnit
         Attack
     };
 
+    enum class Direction // направление взгляда
+    {
+        Down,
+        Up,
+        Right,
+        Left
+    };
+
     std::map<Action, sf::Time> animationTimeout{
         {Action::Idle, sf::milliseconds(1000)},
         {Action::Walk, sf::milliseconds(200)},
@@ -29,7 +37,8 @@ class BaseCharacter : public BaseUnit
 
     const sf::Texture &texture = Assets::getInstance().defaultCharacter;
 
-    Action action = Action::Idle; // текущее действие
+    Action action = Action::Idle;          // текущее действие
+    Direction direction = Direction::Down; // направление взгляда
 
     unsigned int animationFrame = 0; // кадр анимации
     sf::Clock animationClock;        // таймер переключения кадров

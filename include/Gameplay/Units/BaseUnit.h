@@ -10,20 +10,10 @@
 class BaseUnit : public sf::Drawable, public sf::Transformable
 {
   protected:
-    enum class Direction // направление взгляда
-    {
-        Down,
-        Up,
-        Right,
-        Left
-    };
-
     sf::Vector2u position; // позиция в клеточном поле
 
     const sf::Texture &texture = Assets::getInstance().defaultTexture;
     sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX); // участок текстуры для отрисовки
-
-    Direction direction = Direction::Down; // направление взгляда
 
   public:
     BaseUnit(sf::Vector2u position);
