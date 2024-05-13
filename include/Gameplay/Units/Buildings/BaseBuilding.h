@@ -10,6 +10,10 @@ class BaseBuilding : public BaseUnit
 
     const sf::Texture &texture = Assets::getInstance().defaultBuilding;
     sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX); // участок текстуры для отрисовки
+
+  public:
+    BaseBuilding(sf::Vector2u position);
+    ~BaseBuilding() = default; // требуется для умного указателя
 };
 
 #endif
