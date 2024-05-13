@@ -1,11 +1,11 @@
 #include <chrono>
 #include <iostream>
 
-#include "Gameplay/Characters/BaseCharacter.h"
+#include "Gameplay/Units/Characters/BaseCharacter.h"
 
 using namespace std::chrono_literals;
 
-BaseCharacter::BaseCharacter(sf::Vector2u position) : position(position)
+BaseCharacter::BaseCharacter(sf::Vector2u position) : BaseUnit(position)
 {
 }
 
@@ -65,16 +65,6 @@ void BaseCharacter::moveTo(sf::Vector2u targetPosition, std::function<bool(sf::V
     });
 }
 
-sf::Vector2u BaseCharacter::getPosition() const
-{
-    return position;
-}
-
-void BaseCharacter::setPosition(sf::Vector2u position)
-{
-    this->position = position;
-}
-
 float BaseCharacter::getSpeed() const
 {
     return speed;
@@ -83,11 +73,6 @@ float BaseCharacter::getSpeed() const
 void BaseCharacter::setSpeed(float speed)
 {
     this->speed = speed;
-}
-
-sf::IntRect BaseCharacter::getArea() const
-{
-    return area;
 }
 
 void BaseCharacter::update()
