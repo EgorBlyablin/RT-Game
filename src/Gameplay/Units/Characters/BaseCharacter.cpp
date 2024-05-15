@@ -9,14 +9,15 @@ BaseCharacter::BaseCharacter(sf::Vector2u position, unsigned int hp) : BaseUnit(
 {
 }
 
-void BaseCharacter::moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree)
+void BaseCharacter::moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
+                           bool calledFromAttackThread)
 {
-    if (movementThread.joinable()) // если приходит запрос на новое перемещение - отправляем запрос на завершение потока
-                                   // и ждем его завершения
-    {
-        movementThread.request_stop();
-        movementThread.join();
-    }
+    // если приходит запрос на новое действие - завершаем действующие потоки
+    if (calledFromAttackThread) // если требуется закрытие потока атаки (необходимо отключать, если перемещение
+                                // вызывается из потока атаки)
+        stopAttackThread();
+
+    stopMovementThread(); // предыдущий поток перемещения в любом случае должен быть закрыт
 
     // инициализируем новый поток перемещения к указанной позиции
     movementThread = std::jthread([&, targetPosition, isTileFree](std::stop_token stopToken) {
@@ -32,35 +33,58 @@ void BaseCharacter::moveTo(sf::Vector2u targetPosition, std::function<bool(sf::V
             if (abs(targetPosition.x - position.x) >= abs(targetPosition.y - position.y))
             {
                 if (targetPosition.x > position.x)
-                {
-                    direction = Direction::Right;
                     nextPosition.x += 1;
-                }
                 else
-                {
-                    direction = Direction::Left;
                     nextPosition.x -= 1;
-                }
             }
             else
             {
                 if (targetPosition.y > position.y)
-                {
-                    direction = Direction::Down;
                     nextPosition.y += 1;
-                }
                 else
-                {
-                    direction = Direction::Up;
                     nextPosition.y -= 1;
-                }
             }
 
+            direction = getDirection(position, nextPosition);
             action = Action::Walk;
-            this->setPosition(nextPosition);
+            position = nextPosition;
         }
 
-        direction = Direction::Down;
+        action = Action::Idle;
+    });
+}
+
+void BaseCharacter::attack(std::unique_ptr<BaseUnit> *targetUnit, std::function<bool(sf::Vector2u)> isTileFree)
+{
+    // если приходит запрос на атаку новой цели - завершаем все потоки персонажа
+    stopMovementThread();
+    stopAttackThread();
+
+    // инициализируем новый поток перемещения к указанной позиции
+    attackThread = std::jthread([&, targetUnit, isTileFree](std::stop_token stopToken) {
+        while (not stopToken.stop_requested() and targetUnit->get()->getHP() > 0)
+        {
+            moveTo(targetUnit->get()->getPosition(), isTileFree, false);
+
+            while (movementThread.joinable() and BaseUnit::distance(this, targetUnit->get()) > 1)
+                if (stopToken.stop_requested())
+                    break;
+
+            std::this_thread::sleep_for(std::chrono::duration<float>{1 / speed}); // запускаем временную отсечку
+
+            if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                break;
+
+            if (BaseUnit::distance(this, targetUnit->get()) == 1) // цель в поле досягаемости
+            {
+                direction = getDirection(position, targetUnit->get()->getPosition());
+                action = Action::Attack;
+
+                targetUnit->get()->setHP(targetUnit->get()->getHP() - damage);
+            }
+        }
+
+        stopMovementThread();
         action = Action::Idle;
     });
 }
@@ -73,6 +97,24 @@ float BaseCharacter::getSpeed() const
 void BaseCharacter::setSpeed(float speed)
 {
     this->speed = speed;
+}
+
+void BaseCharacter::stopMovementThread()
+{
+    if (movementThread.joinable())
+    {
+        movementThread.request_stop();
+        movementThread.join();
+    }
+}
+
+void BaseCharacter::stopAttackThread()
+{
+    if (attackThread.joinable())
+    {
+        attackThread.request_stop();
+        attackThread.join();
+    }
 }
 
 void BaseCharacter::update()
@@ -121,4 +163,15 @@ void BaseCharacter::draw(sf::RenderTarget &target, sf::RenderStates states) cons
 
     sf::Sprite sprite(texture, area);
     target.draw(sprite, states);
+}
+
+BaseCharacter::Direction BaseCharacter::getDirection(sf::Vector2u fromPoint, sf::Vector2u toPoint)
+{
+    if (fromPoint.x < toPoint.x)
+        return Direction::Right;
+    else if (fromPoint.x > toPoint.x)
+        return Direction::Left;
+    else if (fromPoint.y > toPoint.y)
+        return Direction::Up;
+    return Direction::Down;
 }

@@ -24,6 +24,9 @@ Map::Map() : player(), bot()
 
 bool Map::isTileFree(sf::Vector2u position) const // проверка клетки на пустоту
 {
+    if (position.x >= MAPSIZE or position.y >= MAPSIZE)
+        return false;
+
     for (auto &player : players)
         if (std::any_of(player->getUnits().cbegin(), player->getUnits().cend(),
                         [&position](auto &unit) { return position == unit->getPosition(); }))
@@ -58,8 +61,24 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
         }
 
         if (event.mouseButton.button == sf::Mouse::Button::Right) // команда выбранному существу
-            if (cursor != nullptr and isTileFree(tileIndex))
-                (*cursor)->moveTo(tileIndex, [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
+            if (cursor != nullptr and dynamic_cast<BaseCharacter *>(cursor->get()) != nullptr)
+            // если курсор установлен и ссылается на персонажа
+            {
+                auto cursorCharacter = dynamic_cast<BaseCharacter *>(cursor->get());
+
+                if (isTileFree(tileIndex))
+                    cursorCharacter->moveTo(tileIndex,
+                                            [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
+                else
+                {
+                    auto it = std::find_if(bot.getUnits().begin(), bot.getUnits().end(),
+                                           [&tileIndex](auto &unit) { return tileIndex == unit->getPosition(); });
+
+                    if (it != bot.getUnits().end()) // в указанной клетке присутствует юнит бота
+                        cursorCharacter->attack(&(*it),
+                                                [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
+                }
+            }
     }
 
     player.handleEvent(event, camera);
@@ -68,8 +87,16 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
 void Map::update()
 {
     for (auto &player : players)
-        for (auto &unit : player->getUnits())
-            unit->update();
+        for (auto unitIterator = player->getUnits().begin(); unitIterator != player->getUnits().end();)
+        {
+            if (unitIterator->get()->getHP() > 0)
+            {
+                unitIterator->get()->update();
+                unitIterator++;
+            }
+            else
+                unitIterator = player->getUnits().erase(unitIterator);
+        }
 }
 
 void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
