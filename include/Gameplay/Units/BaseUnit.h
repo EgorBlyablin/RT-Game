@@ -13,14 +13,14 @@
 class BaseUnit : public sf::Drawable, public sf::Transformable
 {
   protected:
-    unsigned int hp;
     sf::Vector2u position; // позиция в клеточном поле
+    unsigned int hp;       // очки здоровья
 
     const sf::Texture &texture = Assets::getInstance().defaultTexture;
     sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX); // участок текстуры для отрисовки
 
   public:
-    BaseUnit(sf::Vector2u position);
+    BaseUnit(sf::Vector2u position, unsigned int hp);
     ~BaseUnit() = default; // требуется для умного указателя
 
     virtual void moveTo(sf::Vector2u targetPosition,

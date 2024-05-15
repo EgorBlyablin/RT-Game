@@ -1,6 +1,6 @@
 #include "Gameplay/Units/BaseUnit.h"
 
-BaseUnit::BaseUnit(sf::Vector2u position) : position(position)
+BaseUnit::BaseUnit(sf::Vector2u position, unsigned int hp) : position(position), hp(hp)
 {
 }
 

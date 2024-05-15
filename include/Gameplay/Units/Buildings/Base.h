@@ -6,11 +6,11 @@
 /// @brief База игрока (игра оканчивается при ее уничтожении)
 class Base : public BaseBuilding
 {
-  protected:
-    unsigned int hp = 500;
+  private:
+    static const unsigned int initialHP = 1000;
 
   public:
-    Base(sf::Vector2u position);
+    Base(sf::Vector2u position, unsigned int hp = initialHP);
     ~Base() = default; // требуется для умного указателя
 
     virtual void moveTo(sf::Vector2u targetPosition,

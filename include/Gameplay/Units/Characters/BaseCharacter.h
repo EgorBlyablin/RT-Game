@@ -13,6 +13,9 @@
 /// @brief Базовый класс персонажа
 class BaseCharacter : public BaseUnit
 {
+  private:
+    static const unsigned int initialHP = 100;
+
   protected:
     enum class Action // текущее действие
     {
@@ -34,7 +37,6 @@ class BaseCharacter : public BaseUnit
         {Action::Walk, sf::milliseconds(200)},
         {Action::Attack, sf::milliseconds(100)}}; // время перехода к следующему кадру анимации
 
-    unsigned int hp = 100;
     float speed = 3.f; // скорость перемещения - число проходимых за секунду клеток
 
     const sf::Texture &texture = Assets::getInstance().defaultCharacter;
@@ -48,7 +50,7 @@ class BaseCharacter : public BaseUnit
     std::jthread movementThread; // поток перемещения
 
   public:
-    BaseCharacter(sf::Vector2u position);
+    BaseCharacter(sf::Vector2u position, unsigned int hp = initialHP);
     ~BaseCharacter() = default; // требуется для умного указателя
 
     virtual void moveTo(sf::Vector2u targetPosition,

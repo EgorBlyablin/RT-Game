@@ -5,7 +5,7 @@
 
 using namespace std::chrono_literals;
 
-BaseCharacter::BaseCharacter(sf::Vector2u position) : BaseUnit(position)
+BaseCharacter::BaseCharacter(sf::Vector2u position, unsigned int hp) : BaseUnit(position, hp)
 {
 }
 
