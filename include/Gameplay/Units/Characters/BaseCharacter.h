@@ -15,6 +15,7 @@ class BaseCharacter : public BaseUnit
 {
   private:
     static const unsigned int initialHP = 100;
+    static const unsigned int damage = 20;
 
   protected:
     enum class Action // текущее действие
@@ -48,19 +49,26 @@ class BaseCharacter : public BaseUnit
     sf::Clock animationClock;        // таймер переключения кадров
 
     std::jthread movementThread; // поток перемещения
+    std::jthread attackThread;   // поток атаки
 
   public:
     BaseCharacter(sf::Vector2u position, unsigned int hp = initialHP);
     ~BaseCharacter() = default; // требуется для умного указателя
 
-    virtual void moveTo(sf::Vector2u targetPosition,
-                        std::function<bool(sf::Vector2u)> isTileFree) override; // перемещение в указанную позицию
+    virtual void moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
+                        bool calledFromAttackThread = true); // перемещение в указанную позицию
+    virtual void attack(std::unique_ptr<BaseUnit> *targetUnit, std::function<bool(sf::Vector2u)> isTileFree);
 
     virtual float getSpeed() const;
     virtual void setSpeed(float speed);
 
+    void stopMovementThread();
+    void stopAttackThread();
+
     virtual void update(); // обновление состояний
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override; // отрисовка клетки
+
+    static Direction getDirection(sf::Vector2u fromPoint, sf::Vector2u toPoint);
 };
 
 #endif

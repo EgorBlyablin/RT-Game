@@ -4,11 +4,6 @@ Base::Base(sf::Vector2u position, unsigned int hp) : BaseBuilding(position, hp)
 {
 }
 
-void Base::moveTo(sf::Vector2u targetPosition,
-                  std::function<bool(sf::Vector2u)> isTileFree) // перемещение в указанную позицию
-{
-}
-
 void Base::update()
 {
 }

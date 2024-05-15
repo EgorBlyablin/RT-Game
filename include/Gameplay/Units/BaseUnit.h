@@ -23,16 +23,17 @@ class BaseUnit : public sf::Drawable, public sf::Transformable
     BaseUnit(sf::Vector2u position, unsigned int hp);
     ~BaseUnit() = default; // требуется для умного указателя
 
-    virtual void moveTo(sf::Vector2u targetPosition,
-                        std::function<bool(sf::Vector2u)> isTileFree) = 0; // перемещение в указанную позицию
-
     sf::Vector2u getPosition() const;
     void setPosition(sf::Vector2u position);
+    unsigned int getHP() const;
+    void setHP(unsigned int hp);
 
     virtual sf::IntRect getArea() const; // получение области текстуры - требуется для масштабирования
 
     virtual void update() = 0; // обновление состояний
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override = 0; // отрисовка клетки
+
+    static unsigned int distance(BaseUnit *unit, BaseUnit *other);
 };
 
 #endif
