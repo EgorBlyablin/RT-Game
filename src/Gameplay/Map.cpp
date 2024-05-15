@@ -8,7 +8,7 @@
 #include "Gameplay/Units/Buildings/Base.h"
 #include "Gameplay/Units/Characters/BaseCharacter.h"
 
-Map::Map()
+Map::Map() : player(), bot()
 {
     std::shared_ptr<BaseTile> cliff = std::make_shared<Cliff>(), tile = std::make_shared<BaseTile>();
 
@@ -19,17 +19,16 @@ Map::Map()
             else
                 tiles[i][j] = tile;
 
-    auto base = std::make_unique<Base>(sf::Vector2u(0, 0));
-    auto character = std::make_unique<BaseCharacter>(sf::Vector2u(1, 1));
-
-    units.push_back(std::move(base));
-    units.push_back(std::move(character));
+    players = {static_cast<BasePlayer *>(&player), static_cast<BasePlayer *>(&bot)};
 }
 
 bool Map::isTileFree(sf::Vector2u position) const // проверка клетки на пустоту
 {
-    return std::none_of(units.cbegin(), units.cend(),
-                        [&position](auto &unit) { return position == unit->getPosition(); });
+    for (auto &player : players)
+        if (std::any_of(player->getUnits().cbegin(), player->getUnits().cend(),
+                        [&position](auto &unit) { return position == unit->getPosition(); }))
+            return false;
+    return true;
 }
 
 sf::Vector2u Map::getTileIndex(const sf::Vector2u &point, const Camera &camera) const
@@ -49,10 +48,10 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
 
         if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
-            auto it = std::find_if(units.begin(), units.end(),
+            auto it = std::find_if(player.getUnits().begin(), player.getUnits().end(),
                                    [&tileIndex](auto &unit) { return tileIndex == unit->getPosition(); });
 
-            if (it != units.end())
+            if (it != player.getUnits().end())
                 cursor = &(*it);
             else
                 cursor = nullptr;
@@ -62,12 +61,15 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
             if (cursor != nullptr and isTileFree(tileIndex))
                 (*cursor)->moveTo(tileIndex, [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
     }
+
+    player.handleEvent(event, camera);
 }
 
 void Map::update()
 {
-    for (auto &unit : units)
-        unit->update();
+    for (auto &player : players)
+        for (auto &unit : player->getUnits())
+            unit->update();
 }
 
 void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -98,19 +100,20 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
             target.draw(*tile, states);
         }
 
-    for (auto &unit : units)
-    {
-        auto position = unit->getPosition();
-
-        if (leftTileToDraw <= position.x && position.x <= rightTileToDraw && topTileToDraw <= position.y &&
-            position.y <= bottomTileToDraw)
+    for (auto &player : players)
+        for (auto &unit : player->getUnits())
         {
-            unit->Transformable::setPosition(
-                static_cast<sf::Vector2f>(position * (unsigned int)TILE_SIZE_PX)); // установка позиции отрисовки
-            unit->setScale((float)TILE_SIZE_PX / unit->getArea().width,
-                           (float)TILE_SIZE_PX / unit->getArea().height); // масштабирование клетки
+            auto position = unit->getPosition();
 
-            target.draw(*unit, states);
+            if (leftTileToDraw <= position.x && position.x <= rightTileToDraw && topTileToDraw <= position.y &&
+                position.y <= bottomTileToDraw)
+            {
+                unit->Transformable::setPosition(
+                    static_cast<sf::Vector2f>(position * (unsigned int)TILE_SIZE_PX)); // установка позиции отрисовки
+                unit->setScale((float)TILE_SIZE_PX / unit->getArea().width,
+                               (float)TILE_SIZE_PX / unit->getArea().height); // масштабирование клетки
+
+                target.draw(*unit, states);
+            }
         }
-    }
 }

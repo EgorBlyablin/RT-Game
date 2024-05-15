@@ -7,6 +7,8 @@
 #include <SFML/Graphics.hpp>
 
 #include "Gameplay/Camera.h"
+#include "Gameplay/Players/Bot.h"
+#include "Gameplay/Players/Player.h"
 #include "Gameplay/Tiles/BaseTile.h"
 #include "Gameplay/Units/BaseUnit.h"
 
@@ -16,10 +18,14 @@
 class Map : public sf::Drawable, public sf::Transformable
 {
   private:
-    std::vector<std::unique_ptr<BaseUnit>> units; // вектор умных указателей на юнитов
     std::shared_ptr<BaseTile> tiles[MAPSIZE][MAPSIZE]; // двумерный массив умных указателей на клетки
 
     std::unique_ptr<BaseUnit> *cursor = nullptr; // указатель на выбранного юнита
+
+    Player player; // игрок
+    Bot bot;       // противник
+
+    std::vector<BasePlayer *> players; // вектор указателей на всех игроков (необходимо для итерации по игрокам)
 
   public:
     Map();
