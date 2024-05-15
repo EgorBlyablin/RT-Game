@@ -16,12 +16,13 @@ class Button : public sf::Drawable, public sf::Transformable
   private:
     std::function<void(void)> callback; // функция, вызываемая кнопкой при ее отпускании
 
+  protected:
+
     bool isPressed = false; // состояние нажатия
     bool isHovered = false; // состояние наведения
 
     bool isDisable = false;
 
-  protected:
     sf::Color backgroundColor{127, 127, 127};     // стандартный цвет фона кнопки
     sf::Color backgroundColorOnClick{32, 32, 32}; // цвет при нажатии
     sf::Color backgroundColorOnHover{64, 64, 64}; // цвет при наведении

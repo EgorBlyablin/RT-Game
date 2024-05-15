@@ -8,15 +8,30 @@
 #include "Screen/Menu.h"
 #include "Screen/Settings.h"
 #include "UI/SwitchButton.h"
+#include "UI/TurnOnOffButton.h"
 
 bool Settings::settingsActive = false;
 
 Settings::Settings()
 {
+
+    sf::VideoMode displayProperties = sf::VideoMode::getDesktopMode(); // получаем свойства экрана
+    sf::Vector2f windowSize = {static_cast<float>(displayProperties.width*0.7), static_cast<float>(displayProperties.height*0.7)};//использую это, чтобы распологать кнопки в зависимости от разрешения
+
     settingsActive = true;
 
+    std::unique_ptr<TurnOnOffButton> turnOnOffButton = std::make_unique<TurnOnOffButton>(
+        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "OFF", Assets::getInstance().font, 30*windowSize.y/800,
+        std::pair<std::function<void(void)>, std::function<void(void)>>{
+            []{std::cout<<"on\n";}, []{std::cout<<"off\n";}
+        }
+        );
+    turnOnOffButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
+    turnOnOffButton->setTextColor(sf::Color(255, 255, 255));
+
     std::unique_ptr<Button> exitButton = std::make_unique<Button>(
-        sf::Vector2f(200, 50), "Main menu", Assets::getInstance().font, 30, []
+        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.2), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "exit", Assets::getInstance().font, 30*windowSize.y/800,
+        []
         {
             auto s = new Menu();
             Application::getInstance().setCurrentScreen(s);
@@ -37,12 +52,13 @@ Settings::Settings()
          }}
     };
     std::unique_ptr<SwitchButton> resolutionButton = std::make_unique<SwitchButton>(
-        sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Resolution", Assets::getInstance().font, 30, callBacks);
+        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.3), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "resolution", Assets::getInstance().font, 30*windowSize.y/800,callBacks);
+
     resolutionButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     resolutionButton->setTextColor(sf::Color(255, 255, 255));
 
     std::unique_ptr<Button> applyButton = std::make_unique<Button>(
-        sf::Vector2f(300, 0), sf::Vector2f(200, 50), "Apply", Assets::getInstance().font, 30, [this]
+        sf::Vector2f(windowSize.x*0.7, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "apply", Assets::getInstance().font, 30*windowSize.y/800,[this]
         {
             this->apply();
         });
@@ -52,6 +68,7 @@ Settings::Settings()
     buttons.push_back(std::move(exitButton));
     buttons.push_back(std::move(resolutionButton));
     buttons.push_back(std::move(applyButton));
+    buttons.push_back(std::move(turnOnOffButton));
 }
 
 void Settings::handleEvent(const sf::Event &event)

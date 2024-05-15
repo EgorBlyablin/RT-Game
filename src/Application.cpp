@@ -84,3 +84,7 @@ void Application::setWindow(sf::VideoMode mode)
 {
     window.create(mode, "Game");
 }
+const sf::RenderWindow &Application::getWindow() const
+{
+    return window;
+}

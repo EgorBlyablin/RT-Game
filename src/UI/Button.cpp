@@ -71,9 +71,10 @@ void Button::updateColor()
 
 void Button::setPosition(sf::Vector2f position)
 {
-    Transformable::setPosition(position); // передача значения в родительский класс
 
     shape.setPosition(position); // позиционирование заднего фона
+
+
 
     text.setOrigin(
         text.getGlobalBounds().left,

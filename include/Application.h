@@ -31,6 +31,7 @@ class Application
 
     void setCurrentScreen(BaseScreen* newScreen);
     void setWindow(sf::VideoMode mode);
+    const sf::RenderWindow &getWindow() const;
 };
 
 #endif

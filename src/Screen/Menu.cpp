@@ -13,14 +13,18 @@ bool Menu::menuActive = false;
 
 Menu::Menu()
 {
+    sf::VideoMode displayProperties = sf::VideoMode::getDesktopMode(); // получаем свойства экрана
+    sf::Vector2f windowSize = {static_cast<float>(displayProperties.width*0.7), static_cast<float>(displayProperties.height*0.7)};//использую это, чтобы распологать кнопки в зависимости от разрешения
     menuActive = true;
-    std::unique_ptr<Button> startButton = std::make_unique<Button>(
-        sf::Vector2f(200, 50), "Start", Assets::getInstance().font, 30, [] { std::cout << "Button was pressed\n"; });
+
+
+    std::unique_ptr<Button> startButton = std::make_unique<Button>
+        (sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "Start", Assets::getInstance().font, 30*windowSize.y/800, [] { std::cout << "Button was pressed\n"; });
     startButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     startButton->setTextColor(sf::Color(255, 255, 255));
 
     std::unique_ptr<Button> settingsButton = std::make_unique<Button>(
-        sf::Vector2f(0, 50), sf::Vector2f(200, 50), "Settings", Assets::getInstance().font, 30, []()
+        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.2), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "Settings", Assets::getInstance().font, 30*windowSize.y/800, []()
         {
             auto s = new Settings();
             Menu::setMenuActive(false);
