@@ -6,13 +6,11 @@
 
 #include "UI/TurnOnOffButton.h"
 
-TurnOnOffButton::TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &text,
+TurnOnOffButton::TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size,
                                  const sf::Font &font, const unsigned int characterSize,
                                  const std::pair<std::function<void(void)>, std::function<void(void)>> &callbacks)
-    : Button(position, size, text, font, characterSize), callbacks(callbacks)
-{
-    std::cout<<"belissimo";
-}
+    : Button(position, size, "OFF", font, characterSize), callbacks(callbacks)
+{}
 
 void TurnOnOffButton::updateColor()
 {
@@ -57,7 +55,6 @@ void TurnOnOffButton::handleEvent(const sf::Event &event)
                         .y)) // данная проверка проводится для того, чтобы случайно нажав на кнопку была возможность не
                              // активировать ее, если отвести курсор в другое место и только потом отпустить
             {
-                updateColor();
                 isTurnedOn = !isTurnedOn;//смена состояния
                 if(isTurnedOn){
                     callbacks.first();
@@ -65,6 +62,7 @@ void TurnOnOffButton::handleEvent(const sf::Event &event)
                 else{
                     callbacks.second();
                 }
+                updateColor();
             }
             isPressed = false;
             if (isHovered){//сделал так, потому что после смены экрана текущая функция продолжает выполняться, но при этом

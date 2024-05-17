@@ -70,6 +70,9 @@ void SwitchButton::updateColor()
     infoText.setFillColor(textColor);
 
     infoText.setString(choice->first);
+
+    left.updateColor();
+    right.updateColor();
 }
 void SwitchButton::handleEvent(const sf::Event &event)
 {

@@ -19,7 +19,12 @@ Menu::Menu()
 
 
     std::unique_ptr<Button> startButton = std::make_unique<Button>
-        (sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "Start", Assets::getInstance().font, 30*windowSize.y/800, [] { std::cout << "Button was pressed\n"; });
+        (sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "Game", Assets::getInstance().font, 30*windowSize.y/800, [] {
+            std::cout << "Button was pressed\n";//вместо этой строчки смена экрана на игровой(пример строчкой ниже)
+//            auto s = new Game();
+//            Menu::setMenuActive(false);
+//            Application::getInstance().setCurrentScreen(s);
+        });
     startButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     startButton->setTextColor(sf::Color(255, 255, 255));
 
@@ -53,6 +58,10 @@ void Menu::handleEvent(const sf::Event &event)
 
 void Menu::update()
 {
+    for (auto &button: buttons)//добавил это, чтобы при смене экрана кнопки имели установленный цвет
+    {
+        button->updateColor();
+    }
 }
 
 void Menu::draw(sf::RenderTarget &target, sf::RenderStates states) const

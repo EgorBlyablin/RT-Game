@@ -10,19 +10,19 @@
 class TurnOnOffButton :public Button
 {
   private:
-    std::pair<std::function<void(void)>, std::function<void(void)>> callbacks;//первый элемент - вкл;
+    std::pair<std::function<void(void)>, std::function<void(void)>> callbacks;//первый элемент - выкл;
 
     bool isTurnedOn = false;
 
   public:
-    TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &text,
+    TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size,
                     const sf::Font &font, const unsigned int characterSize,
                     const std::pair<std::function<void(void)>, std::function<void(void)>> &callbacks);
 
-    TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &text,
+    TurnOnOffButton(const sf::Vector2f &position, const sf::Vector2f &size,
                     const sf::Font &font, const unsigned int characterSize,
                     const std::pair<std::function<void(void)>, std::function<void(void)>> &callbacks, bool turnedOn)
-        :isTurnedOn(turnedOn){}
+        :TurnOnOffButton(position, size, font, characterSize, callbacks){this->isTurnedOn= turnedOn;}
 
     void updateColor() override;
     void handleEvent(const sf::Event &event) override;

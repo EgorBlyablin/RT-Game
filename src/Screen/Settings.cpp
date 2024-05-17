@@ -21,10 +21,11 @@ Settings::Settings()
     settingsActive = true;
 
     std::unique_ptr<TurnOnOffButton> turnOnOffButton = std::make_unique<TurnOnOffButton>(
-        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), "OFF", Assets::getInstance().font, 30*windowSize.y/800,
+        sf::Vector2f(windowSize.x*0.425, windowSize.y*0.1), sf::Vector2f(windowSize.x*0.15, windowSize.y*0.1), Assets::getInstance().font, 30*windowSize.y/800,
         std::pair<std::function<void(void)>, std::function<void(void)>>{
             []{std::cout<<"on\n";}, []{std::cout<<"off\n";}
-        }
+        },
+        true
         );
     turnOnOffButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     turnOnOffButton->setTextColor(sf::Color(255, 255, 255));
@@ -84,7 +85,12 @@ void Settings::handleEvent(const sf::Event &event)
     }
 }
 
-void Settings::update(){}
+void Settings::update(){
+    for (auto &button: buttons)
+    {
+        button->updateColor();
+    }
+}
 
 void Settings::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {

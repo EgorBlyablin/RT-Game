@@ -1,5 +1,4 @@
 #include <iostream>
-#include <expat.h>
 
 #include "UI/Button.h"
 
@@ -12,6 +11,7 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std
     this->text.setString(text); // установка текста кнопки
     this->text.setFont(font);
     this->text.setCharacterSize(characterSize); // установка размера текста
+
 
     setPosition(position); // позиционирование кнопки
 }
@@ -84,10 +84,6 @@ void Button::setPosition(sf::Vector2f position)
                          2.f); // центрирование текста на кнопке
 }
 
-void Button::setIsDisable(bool var)
-{
-    Button::isDisable = var;
-}
 
 void Button::handleEvent(const sf::Event &event)
 {
