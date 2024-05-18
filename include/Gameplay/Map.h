@@ -33,9 +33,15 @@ class Map : public sf::Drawable, public sf::Transformable
     bool isTileFree(sf::Vector2u position) const;
 
     sf::Vector2u getTileIndex(const sf::Vector2u &point, const Camera &camera) const;
+    sf::IntRect getViewCoordinates(const sf::View &view) const;
+    sf::Rect<unsigned int> getTilesToDraw(const sf::IntRect &viewCoordinates) const;
 
     void handleEvent(const sf::Event &event, const Camera &camera);
     void update();
+
+    void drawTiles(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const;
+    void drawUnits(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const;
+    void drawRoute(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const;
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };
 

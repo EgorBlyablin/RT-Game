@@ -31,7 +31,9 @@ sf::IntRect BaseUnit::getArea() const
     return area;
 }
 
-unsigned int BaseUnit::distance(BaseUnit *unit, BaseUnit *other)
+unsigned int BaseUnit::distance(sf::Vector2u first, sf::Vector2u second)
 {
-    return abs((unit->position - other->position).x) + abs((unit->position - other->position).y);
+    auto delta = second - first;
+
+    return abs(delta.x) + abs(delta.y);
 }

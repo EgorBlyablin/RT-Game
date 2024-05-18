@@ -1,6 +1,8 @@
 #ifndef BASE_CHARACTERS_H
 #define BASE_CHARACTERS_H
 
+#include <cstdint>
+#include <deque>
 #include <functional>
 #include <map>
 #include <memory>
@@ -9,6 +11,19 @@
 #include <SFML/Graphics.hpp>
 
 #include "Gameplay/Units/BaseUnit.h"
+
+/// @brief Свойства действия
+class ActionProperties
+{
+  public:
+    sf::Time animationTimeout; // таймаут переключения кадра
+    uint8_t frames; // число кадров
+
+    ActionProperties(sf::Time animationTimeout, uint8_t frames);
+    ActionProperties() : ActionProperties(sf::Time(), 0)
+    {
+    }
+};
 
 /// @brief Базовый класс персонажа
 class BaseCharacter : public BaseUnit
@@ -33,20 +48,21 @@ class BaseCharacter : public BaseUnit
         Left
     };
 
-    std::map<Action, sf::Time> animationTimeout{
-        {Action::Idle, sf::milliseconds(1000)},
-        {Action::Walk, sf::milliseconds(200)},
-        {Action::Attack, sf::milliseconds(100)}}; // время перехода к следующему кадру анимации
+    std::map<Action, ActionProperties> animationProperties{
+        {Action::Idle, {sf::milliseconds(1000), 2}},
+        {Action::Walk, {sf::milliseconds(200), 4}},
+        {Action::Attack, {sf::milliseconds(200), 3}}};
 
     float speed = 3.f; // скорость перемещения - число проходимых за секунду клеток
+    std::deque<sf::Vector2u> path; // текущий маршрут
 
     const sf::Texture &texture = Assets::getInstance().defaultCharacter;
 
     Action action = Action::Idle;          // текущее действие
     Direction direction = Direction::Down; // направление взгляда
 
-    unsigned int animationFrame = 0; // кадр анимации
-    sf::Clock animationClock;        // таймер переключения кадров
+    uint8_t animationFrame = 0; // кадр анимации
+    sf::Clock animationClock;   // таймер переключения кадров
 
     std::jthread movementThread; // поток перемещения
     std::jthread attackThread;   // поток атаки
@@ -56,11 +72,14 @@ class BaseCharacter : public BaseUnit
     ~BaseCharacter() = default; // требуется для умного указателя
 
     virtual void moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
-                        bool calledFromAttackThread = true); // перемещение в указанную позицию
-    virtual void attack(std::unique_ptr<BaseUnit> *targetUnit, std::function<bool(sf::Vector2u)> isTileFree);
+                        bool attackThreadClosureRequired = true,
+                        bool stopAtNeighborTile = false); // перемещение в указанную позицию
+    virtual void attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<bool(sf::Vector2u)> isTileFree);
 
     virtual float getSpeed() const;
     virtual void setSpeed(float speed);
+    virtual std::deque<sf::Vector2u> getPath() const;
+    virtual void setPath(std::deque<sf::Vector2u> path);
 
     void stopMovementThread();
     void stopAttackThread();
