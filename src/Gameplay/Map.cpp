@@ -1,12 +1,14 @@
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include <typeinfo>
+#include <math.h>
 
 #include "Gameplay/Map.h"
 #include "Gameplay/Tiles/Cliff.h"
 #include "Gameplay/Units/Buildings/Base.h"
 #include "Gameplay/Units/Characters/BaseCharacter.h"
+
+#define ROUTE_CIRCLES_RADIUS (TILE_SIZE_PX / 2 / 4)
 
 Map::Map() : player(), bot()
 {
@@ -43,6 +45,23 @@ sf::Vector2u Map::getTileIndex(const sf::Vector2u &point, const Camera &camera) 
     return tileIndex;
 }
 
+sf::IntRect Map::getViewCoordinates(const sf::View &view) const
+{
+    std::cout << (view.getCenter() + (view.getSize() / 2.f)).x << ' ' << (view.getCenter() + (view.getSize() / 2.f)).y
+              << '\n';
+
+    return sf::IntRect(static_cast<sf::Vector2i>(view.getCenter() - (view.getSize() / 2.f)),
+                       static_cast<sf::Vector2i>(view.getCenter() + (view.getSize() / 2.f)));
+}
+
+sf::Rect<unsigned int> Map::getTilesToDraw(const sf::IntRect &viewCoordinates) const
+{
+    return sf::Rect<unsigned int>(
+        std::max(0, viewCoordinates.left / TILE_SIZE_PX), std::max(0, viewCoordinates.top / TILE_SIZE_PX),
+        std::min(MAPSIZE, (int)std::ceil((float)(viewCoordinates.width - viewCoordinates.left) / TILE_SIZE_PX) + 1),
+        std::min(MAPSIZE, (int)std::ceil((float)(viewCoordinates.height - viewCoordinates.top) / TILE_SIZE_PX) + 1));
+}
+
 void Map::handleEvent(const sf::Event &event, const Camera &camera)
 {
     if (event.type == sf::Event::MouseButtonPressed)
@@ -75,8 +94,7 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
                                            [&tileIndex](auto &unit) { return tileIndex == unit->getPosition(); });
 
                     if (it != bot.getUnits().end()) // в указанной клетке присутствует юнит бота
-                        cursorCharacter->attack(&(*it),
-                                                [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
+                        cursorCharacter->attack(*it, [this](sf::Vector2u tileIndex) { return isTileFree(tileIndex); });
                 }
             }
     }
@@ -99,41 +117,32 @@ void Map::update()
         }
 }
 
-void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void Map::drawTiles(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const
 {
-    sf::View camera = target.getView();
-
-    sf::IntRect cameraViewCoordinates((int)((camera.getCenter() - (camera.getSize() / 2.f)).x),
-                                      (int)((camera.getCenter() - (camera.getSize() / 2.f)).y),
-                                      (int)((camera.getCenter() + (camera.getSize() / 2.f)).x),
-                                      (int)((camera.getCenter() + (camera.getSize() / 2.f)).y));
-    // положение камеры в игровом мире
-
-    unsigned int leftTileToDraw = std::max(0, cameraViewCoordinates.left / TILE_SIZE_PX),
-                 topTileToDraw = std::max(0, cameraViewCoordinates.top / TILE_SIZE_PX),
-                 rightTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.width / TILE_SIZE_PX + 1),
-                 bottomTileToDraw = std::min(MAPSIZE, cameraViewCoordinates.height / TILE_SIZE_PX + 1);
-    // крайние клетки для отрисовки (оптимизация, чтобы отрисовывать только видимые клетки)
-
-    for (unsigned int i = leftTileToDraw; i < rightTileToDraw; i++)
-        for (unsigned int j = topTileToDraw; j < bottomTileToDraw; j++)
+    for (unsigned int y = tilesToDraw.top; y < tilesToDraw.top + tilesToDraw.height; y++)
+        for (unsigned int x = tilesToDraw.left; x < tilesToDraw.left + tilesToDraw.width; x++)
         {
-            auto &tile = tiles[i][j]; // получение ссылки на клетку
+            if (x > MAPSIZE - 1 or y > MAPSIZE - 1)
+                continue;
 
-            tile->setPosition((float)i * TILE_SIZE_PX, (float)j * TILE_SIZE_PX); // установка позиции отрисовки
+            auto &tile = tiles[y][x]; // получение ссылки на клетку
+
+            tile->setPosition((float)x * TILE_SIZE_PX, (float)y * TILE_SIZE_PX); // установка позиции отрисовки
             tile->setScale((float)TILE_SIZE_PX / tile->getArea().width,
                            (float)TILE_SIZE_PX / tile->getArea().height); // масштабирование клетки
 
             target.draw(*tile, states);
         }
+}
 
+void Map::drawUnits(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const
+{
     for (auto &player : players)
         for (auto &unit : player->getUnits())
         {
             auto position = unit->getPosition();
 
-            if (leftTileToDraw <= position.x && position.x <= rightTileToDraw && topTileToDraw <= position.y &&
-                position.y <= bottomTileToDraw)
+            if (tilesToDraw.contains(position))
             {
                 unit->Transformable::setPosition(
                     static_cast<sf::Vector2f>(position * (unsigned int)TILE_SIZE_PX)); // установка позиции отрисовки
@@ -143,4 +152,44 @@ void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
                 target.draw(*unit, states);
             }
         }
+}
+
+void Map::drawRoute(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const
+{
+    // отрисовка маршрута
+    auto character = dynamic_cast<BaseCharacter *>(cursor->get());
+
+    float radius = ROUTE_CIRCLES_RADIUS;
+
+    sf::CircleShape circle(radius);
+    circle.setOrigin(sf::Vector2f(radius, radius));
+    circle.setFillColor(sf::Color(0, 0, 0, 0));
+    circle.setOutlineColor(sf::Color(255, 255, 255));
+    circle.setOutlineThickness((float)TILE_SIZE_PX * 0.03);
+
+    if (character->getPath().size() > 0)
+        for (auto &tileIndex : character->getPath())
+            if (tilesToDraw.contains(tileIndex))
+                if (tileIndex != character->getPosition())
+                {
+                    circle.setPosition(static_cast<sf::Vector2f>(tileIndex * (unsigned int)TILE_SIZE_PX) +
+                                       sf::Vector2f(TILE_SIZE_PX * 0.5f, TILE_SIZE_PX * 0.5f));
+
+                    target.draw(circle, states);
+                }
+}
+
+void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
+{
+    sf::View camera = target.getView();
+
+    sf::IntRect viewCoordinates = getViewCoordinates(camera); // положение камеры в игровом мире
+    sf::Rect<unsigned int> tilesToDraw = getTilesToDraw(
+        viewCoordinates); // крайние клетки для отрисовки (оптимизация, чтобы отрисовывать только видимые клетки)
+
+    drawTiles(target, states, tilesToDraw);
+    drawUnits(target, states, tilesToDraw);
+
+    if (cursor != nullptr and dynamic_cast<BaseCharacter *>(cursor->get()) != nullptr)
+        drawRoute(target, states, tilesToDraw);
 }

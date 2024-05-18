@@ -33,7 +33,7 @@ class BaseUnit : public sf::Drawable, public sf::Transformable
     virtual void update() = 0; // обновление состояний
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override = 0; // отрисовка клетки
 
-    static unsigned int distance(BaseUnit *unit, BaseUnit *other);
+    static unsigned int distance(sf::Vector2u first, sf::Vector2u second);
 };
 
 #endif

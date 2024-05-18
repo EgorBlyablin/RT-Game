@@ -2,85 +2,154 @@
 #include <iostream>
 
 #include "Gameplay/Units/Characters/BaseCharacter.h"
+#include "Utilities/AStar.h"
 
 using namespace std::chrono_literals;
+
+ActionProperties::ActionProperties(sf::Time animationTimeout, uint8_t frames)
+    : animationTimeout(animationTimeout), frames(frames)
+{
+}
 
 BaseCharacter::BaseCharacter(sf::Vector2u position, unsigned int hp) : BaseUnit(position, hp)
 {
 }
 
 void BaseCharacter::moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
-                           bool calledFromAttackThread)
+                           bool attackThreadClosureRequired, bool stopAtNeighborTile)
 {
     // если приходит запрос на новое действие - завершаем действующие потоки
-    if (calledFromAttackThread) // если требуется закрытие потока атаки (необходимо отключать, если перемещение
-                                // вызывается из потока атаки)
+    if (attackThreadClosureRequired)
         stopAttackThread();
-
     stopMovementThread(); // предыдущий поток перемещения в любом случае должен быть закрыт
 
     // инициализируем новый поток перемещения к указанной позиции
-    movementThread = std::jthread([&, targetPosition, isTileFree](std::stop_token stopToken) {
-        while (not stopToken.stop_requested() and position != targetPosition)
+    movementThread = std::jthread([this, targetPosition, isTileFree, stopAtNeighborTile](std::stop_token stopToken) {
+        while (not stopToken.stop_requested())
         {
-            std::this_thread::sleep_for(std::chrono::duration<float>{1 / speed}); // запускаем временную отсечку
+            auto timer = std::chrono::steady_clock::now();
+
+            while (std::chrono::steady_clock::now() - timer < std::chrono::milliseconds{1000 / (int)speed})
+                if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                    break;
+
+            std::deque<sf::Vector2u> recalculatedPath;
+
+            if (stopAtNeighborTile)
+            {
+                auto neighbors = getNeighbors(targetPosition, isTileFree);
+
+                if (std::find(neighbors.cbegin(), neighbors.cend(), targetPosition) != neighbors.cend())
+                    break;
+
+                for (auto &neighbor : neighbors)
+                {
+                    if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                        break;
+
+                    // рассчитываем новый маршрут
+                    auto recalculatedNeighborPath = calculatePath(position, neighbor, isTileFree, &stopToken);
+
+                    if (recalculatedPath.empty() or (not recalculatedNeighborPath.empty() and
+                                                     recalculatedPath.size() > recalculatedNeighborPath.size()))
+                        recalculatedPath = recalculatedNeighborPath;
+                }
+            }
+            else // рассчитываем новый маршрут
+                recalculatedPath = calculatePath(position, targetPosition, isTileFree, &stopToken);
+
+            // если маршрут пуст или новый оказался короче текущего - обновляем маршрут
+            if (not recalculatedPath.empty())
+                if (path.empty() or path.size() > recalculatedPath.size())
+                    setPath(recalculatedPath);
 
             if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
                 break;
 
-            auto nextPosition = position; // координата следующей позиции
-
-            if (abs(targetPosition.x - position.x) >= abs(targetPosition.y - position.y))
+            if (not path.empty())
             {
-                if (targetPosition.x > position.x)
-                    nextPosition.x += 1;
-                else
-                    nextPosition.x -= 1;
+                auto nextPosition = path.front(); // получаем следующее положение игрока
+                path.pop_front(); // удаляем следующую позицию из маршрута
+
+                direction = getDirection(position, nextPosition); // меняем его взгляд в направлении движения
+                action = Action::Walk;
+                position = nextPosition;
             }
             else
-            {
-                if (targetPosition.y > position.y)
-                    nextPosition.y += 1;
-                else
-                    nextPosition.y -= 1;
-            }
-
-            direction = getDirection(position, nextPosition);
-            action = Action::Walk;
-            position = nextPosition;
+                break;
         }
 
-        action = Action::Idle;
+        path.clear();          // очищаем маршрут
+        action = Action::Idle; // переводим анимацию персонажа в режим бездействия
     });
 }
 
-void BaseCharacter::attack(std::unique_ptr<BaseUnit> *targetUnit, std::function<bool(sf::Vector2u)> isTileFree)
+void BaseCharacter::attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<bool(sf::Vector2u)> isTileFree)
 {
     // если приходит запрос на атаку новой цели - завершаем все потоки персонажа
     stopMovementThread();
     stopAttackThread();
 
     // инициализируем новый поток перемещения к указанной позиции
-    attackThread = std::jthread([&, targetUnit, isTileFree](std::stop_token stopToken) {
-        while (not stopToken.stop_requested() and targetUnit->get()->getHP() > 0)
+    attackThread = std::jthread([this, &targetUnit, isTileFree](std::stop_token stopToken) {
+        auto targetPosition = targetUnit->getPosition();
+
+        while (not stopToken.stop_requested() and targetUnit != nullptr and targetUnit->getHP() > 0)
         {
-            moveTo(targetUnit->get()->getPosition(), isTileFree, false);
-
-            while (movementThread.joinable() and BaseUnit::distance(this, targetUnit->get()) > 1)
-                if (stopToken.stop_requested())
-                    break;
-
-            std::this_thread::sleep_for(std::chrono::duration<float>{1 / speed}); // запускаем временную отсечку
-
-            if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
-                break;
-
-            if (BaseUnit::distance(this, targetUnit->get()) == 1) // цель в поле досягаемости
+            if (BaseUnit::distance(position, targetUnit->getPosition()) == 1) // цель в поле досягаемости
             {
-                direction = getDirection(position, targetUnit->get()->getPosition());
+                stopMovementThread();
                 action = Action::Attack;
 
-                targetUnit->get()->setHP(targetUnit->get()->getHP() - damage);
+                auto attackPrepareTimer = std::chrono::steady_clock::now();
+
+                while (std::chrono::steady_clock::now() - attackPrepareTimer <
+                       std::chrono::milliseconds{animationProperties[Action::Attack].animationTimeout.asMilliseconds()})
+                    if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                        break;
+
+                direction = getDirection(position, targetUnit->getPosition());
+                animationFrame = 1; //  устанавливаем кадр удара
+
+                auto attackTimer = std::chrono::steady_clock::now();
+
+                while (std::chrono::steady_clock::now() - attackTimer <
+                       std::chrono::milliseconds{animationProperties[Action::Attack].animationTimeout.asMilliseconds()})
+                    if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                        break;
+
+                auto enemyHP = targetUnit->getHP();
+                targetUnit->setHP(enemyHP - damage);
+
+                if ((int)enemyHP - damage > 0)
+                {
+                    auto attackRestTimer = std::chrono::steady_clock::now();
+
+                    while (std::chrono::steady_clock::now() - attackRestTimer <
+                           std::chrono::milliseconds{
+                               animationProperties[Action::Attack].animationTimeout.asMilliseconds() *
+                               (animationProperties[Action::Attack].frames - 2)})
+                        if (stopToken.stop_requested()) // если за отсечку поступила отмена команды - прерываем цикл
+                            break;
+                }
+                else
+                {
+                    while (targetUnit != nullptr)
+                        std::this_thread::yield();
+
+                    moveTo(targetPosition, isTileFree, false);
+
+                    while (movementThread.joinable() and not stopToken.stop_requested())
+                        std::this_thread::yield();
+                }
+            }
+            else
+            {
+                moveTo(targetUnit->getPosition(), isTileFree, false, true);
+
+                while (movementThread.joinable() and BaseUnit::distance(position, targetUnit->getPosition()) > 1 and
+                       not stopToken.stop_requested())
+                    std::this_thread::yield();
             }
         }
 
@@ -97,6 +166,16 @@ float BaseCharacter::getSpeed() const
 void BaseCharacter::setSpeed(float speed)
 {
     this->speed = speed;
+}
+
+std::deque<sf::Vector2u> BaseCharacter::getPath() const
+{
+    return path;
+}
+
+void BaseCharacter::setPath(std::deque<sf::Vector2u> path)
+{
+    this->path = path;
 }
 
 void BaseCharacter::stopMovementThread()
@@ -119,41 +198,40 @@ void BaseCharacter::stopAttackThread()
 
 void BaseCharacter::update()
 {
-    if (animationClock.getElapsedTime() >= animationTimeout[action])
+    if (animationClock.getElapsedTime() >= animationProperties[action].animationTimeout)
     {
-        animationFrame = (animationFrame + 1) % 4;
         animationClock.restart();
-    }
+        animationFrame = (animationFrame + 1) % animationProperties[action].frames;
 
-    switch (action)
-    {
-    case Action::Idle:
-        area.top = 0;
-        area.left = (animationFrame % 2) * SPRITE_SIZE_PX;
-        break;
-    case Action::Walk:
-        area.top = 0;
-        area.left = (animationFrame + 1) * SPRITE_SIZE_PX;
-        break;
-    case Action::Attack:
-        area.top = 4 * SPRITE_SIZE_PX;
-        area.left += animationFrame * SPRITE_SIZE_PX;
-    }
+        switch (action)
+        {
+        case Action::Idle:
+            area.top = 0;
+            area.left = animationFrame * SPRITE_SIZE_PX;
+            break;
+        case Action::Walk:
+            area.top = 0;
+            area.left = (animationFrame + 1) * SPRITE_SIZE_PX;
+            break;
+        case Action::Attack:
+            area.top = 8 * SPRITE_SIZE_PX;
+            area.left = animationFrame * SPRITE_SIZE_PX;
+        }
 
-    switch (direction)
-    {
-    case Direction::Down:
-        area.top = 0;
-        break;
-    case Direction::Up:
-        area.top = 1 * SPRITE_SIZE_PX;
-        break;
-    case Direction::Right:
-        area.top = 2 * SPRITE_SIZE_PX;
-        break;
-    case Direction::Left:
-        area.top = 3 * SPRITE_SIZE_PX;
-        break;
+        switch (direction)
+        {
+        case Direction::Down:
+            break;
+        case Direction::Up:
+            area.top += 1 * SPRITE_SIZE_PX;
+            break;
+        case Direction::Right:
+            area.top += 2 * SPRITE_SIZE_PX;
+            break;
+        case Direction::Left:
+            area.top += 3 * SPRITE_SIZE_PX;
+            break;
+        }
     }
 }
 
