@@ -5,18 +5,24 @@
 
 #include <SFML/Graphics.hpp>
 
+
 /// @brief Класс кнопки
 /// @details Выполняет отрисовку кнопки в соответствии с ее состоянием,
 /// изменяет ее состояние в соответствии с событиями,
 /// вызывает callback-функцию
-/// @todo возможно, в последствии потребуется использовать текстуру, вместо отдельной отрисовки фона и текста
+/// @todo возможно, в последствии потребуется использовать текстуру, вместо отдельной отрисовки фона и текста ,
+/// @todo добавить конструктор, который принимает размеры окна и в долях от него размеры и позицию кнопки, чтобы учитывать это при изменении окна
 class Button : public sf::Drawable, public sf::Transformable
 {
   private:
     std::function<void(void)> callback; // функция, вызываемая кнопкой при ее отпускании
 
+
+  protected:
+
     bool isPressed = false; // состояние нажатия
     bool isHovered = false; // состояние наведения
+
 
     sf::Color backgroundColor{127, 127, 127};     // стандартный цвет фона кнопки
     sf::Color backgroundColorOnClick{32, 32, 32}; // цвет при нажатии
@@ -51,14 +57,18 @@ class Button : public sf::Drawable, public sf::Transformable
     void setTextColor(const sf::Color &color, const sf::Color &onClick); // установка цвета текста
     void setTextColor(const sf::Color &color);                           // установка цвета текста
 
-    void updateColor(); // обновление текущих цветов в соответствии с состоянием
+    virtual void updateColor(); // обновление текущих цветов в соответствии с состоянием
 
     /// @brief Установка положения кнопки
     /// @param position позиция верхнего левого края кнопки
-    void setPosition(sf::Vector2f position);
+    virtual void setPosition(sf::Vector2f position);
 
-    void handleEvent(const sf::Event &event);                                   // обработка событий
+
+    virtual void handleEvent(const sf::Event &event);                                   // обработка событий
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const; // отрисовка кнопки
+
+    virtual void apply();
+
 };
 
 #endif

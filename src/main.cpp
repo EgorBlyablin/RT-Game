@@ -4,8 +4,6 @@
 int main()
 {
     Assets::getInstance().Load(); // Загружаем ресурсы
-    Application app;              // Создаем модель игры
-    app.run();                    // Запускаем приложение
-
+    Application::getInstance().run();  // Запускаем приложение
     return 0;
 }
