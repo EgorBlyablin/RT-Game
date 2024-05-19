@@ -5,15 +5,11 @@
 
 class BaseBuilding : public BaseUnit
 {
-  private:
-    static const unsigned int initialHP = 100;
-
-  protected:
-    const sf::Texture &texture = Assets::getInstance().defaultBuilding;
-    sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX); // участок текстуры для отрисовки
-
   public:
-    BaseBuilding(sf::Vector2u position, unsigned int hp = initialHP);
+    static const unsigned int maxHP = 100;
+
+    BaseBuilding(sf::Vector2u position, unsigned int hp = maxHP, unsigned int maxHP = BaseBuilding::maxHP, const sf::Texture &texture = Assets::getInstance().defaultBuilding,
+                 sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX));
     ~BaseBuilding() = default; // требуется для умного указателя
 };
 

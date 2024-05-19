@@ -15,23 +15,28 @@ class BaseUnit : public sf::Drawable, public sf::Transformable
   protected:
     sf::Vector2u position; // позиция в клеточном поле
     unsigned int hp;       // очки здоровья
+    unsigned int maxHP;    // максимальное здоровье персонажа
 
-    const sf::Texture &texture = Assets::getInstance().defaultTexture;
-    sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX); // участок текстуры для отрисовки
+    const sf::Texture &texture;
+    sf::IntRect area; // участок текстуры для отрисовки
 
   public:
-    BaseUnit(sf::Vector2u position, unsigned int hp);
+    BaseUnit(sf::Vector2u position, unsigned int hp, unsigned int maxHP,
+             const sf::Texture &texture = Assets::getInstance().defaultTexture,
+             sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX));
     ~BaseUnit() = default; // требуется для умного указателя
 
     sf::Vector2u getPosition() const;
-    void setPosition(sf::Vector2u position);
     unsigned int getHP() const;
+    unsigned int getMaxHP() const;
+    const sf::Texture &getTexture() const;
+    sf::IntRect getArea() const; // получение области текстуры - требуется для масштабирования
+
+    void setPosition(sf::Vector2u position);
     void setHP(unsigned int hp);
 
-    virtual sf::IntRect getArea() const; // получение области текстуры - требуется для масштабирования
-
-    virtual void update() = 0; // обновление состояний
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override = 0; // отрисовка клетки
+    virtual void update(); // обновление состояний
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override; // отрисовка клетки
 
     static unsigned int distance(sf::Vector2u first, sf::Vector2u second);
 };

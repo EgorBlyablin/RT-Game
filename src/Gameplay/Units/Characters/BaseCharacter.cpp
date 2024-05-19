@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iostream>
 
+#include "Assets.h"
 #include "Gameplay/Units/Characters/BaseCharacter.h"
 #include "Utilities/AStar.h"
 
@@ -11,7 +12,9 @@ ActionProperties::ActionProperties(sf::Time animationTimeout, uint8_t frames)
 {
 }
 
-BaseCharacter::BaseCharacter(sf::Vector2u position, unsigned int hp) : BaseUnit(position, hp)
+BaseCharacter::BaseCharacter(sf::Vector2u position, unsigned int hp, unsigned int maxHP,
+                             const sf::Texture &texture, sf::IntRect area)
+    : BaseUnit(position, hp, maxHP, texture, area)
 {
 }
 
@@ -92,8 +95,6 @@ void BaseCharacter::attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<
 
     // инициализируем новый поток перемещения к указанной позиции
     attackThread = std::jthread([this, &targetUnit, isTileFree](std::stop_token stopToken) {
-        auto targetPosition = targetUnit->getPosition();
-
         while (not stopToken.stop_requested() and targetUnit != nullptr and targetUnit->getHP() > 0)
         {
             if (BaseUnit::distance(position, targetUnit->getPosition()) == 1) // цель в поле досягаемости
@@ -137,8 +138,6 @@ void BaseCharacter::attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<
                     while (targetUnit != nullptr)
                         std::this_thread::yield();
 
-                    moveTo(targetPosition, isTileFree, false);
-
                     while (movementThread.joinable() and not stopToken.stop_requested())
                         std::this_thread::yield();
                 }
@@ -163,17 +162,17 @@ float BaseCharacter::getSpeed() const
     return speed;
 }
 
-void BaseCharacter::setSpeed(float speed)
-{
-    this->speed = speed;
-}
-
 std::deque<sf::Vector2u> BaseCharacter::getPath() const
 {
     return path;
 }
 
-void BaseCharacter::setPath(std::deque<sf::Vector2u> path)
+void BaseCharacter::setSpeed(float speed)
+{
+    this->speed = speed;
+}
+
+void BaseCharacter::setPath(const std::deque<sf::Vector2u> &path)
 {
     this->path = path;
 }
@@ -196,6 +195,39 @@ void BaseCharacter::stopAttackThread()
     }
 }
 
+void BaseCharacter::updateArea()
+{
+    switch (action)
+    {
+    case Action::Idle:
+        area.top = 0;
+        area.left = animationFrame * SPRITE_SIZE_PX;
+        break;
+    case Action::Walk:
+        area.top = 0;
+        area.left = (animationFrame + 1) * SPRITE_SIZE_PX;
+        break;
+    case Action::Attack:
+        area.top = 8 * SPRITE_SIZE_PX;
+        area.left = animationFrame * SPRITE_SIZE_PX;
+    }
+
+    switch (direction)
+    {
+    case Direction::Down:
+        break;
+    case Direction::Up:
+        area.top += 1 * SPRITE_SIZE_PX;
+        break;
+    case Direction::Right:
+        area.top += 2 * SPRITE_SIZE_PX;
+        break;
+    case Direction::Left:
+        area.top += 3 * SPRITE_SIZE_PX;
+        break;
+    }
+}
+
 void BaseCharacter::update()
 {
     if (animationClock.getElapsedTime() >= animationProperties[action].animationTimeout)
@@ -203,44 +235,8 @@ void BaseCharacter::update()
         animationClock.restart();
         animationFrame = (animationFrame + 1) % animationProperties[action].frames;
 
-        switch (action)
-        {
-        case Action::Idle:
-            area.top = 0;
-            area.left = animationFrame * SPRITE_SIZE_PX;
-            break;
-        case Action::Walk:
-            area.top = 0;
-            area.left = (animationFrame + 1) * SPRITE_SIZE_PX;
-            break;
-        case Action::Attack:
-            area.top = 8 * SPRITE_SIZE_PX;
-            area.left = animationFrame * SPRITE_SIZE_PX;
-        }
-
-        switch (direction)
-        {
-        case Direction::Down:
-            break;
-        case Direction::Up:
-            area.top += 1 * SPRITE_SIZE_PX;
-            break;
-        case Direction::Right:
-            area.top += 2 * SPRITE_SIZE_PX;
-            break;
-        case Direction::Left:
-            area.top += 3 * SPRITE_SIZE_PX;
-            break;
-        }
+        updateArea();
     }
-}
-
-void BaseCharacter::draw(sf::RenderTarget &target, sf::RenderStates states) const
-{
-    states.transform *= getTransform();
-
-    sf::Sprite sprite(texture, area);
-    target.draw(sprite, states);
 }
 
 BaseCharacter::Direction BaseCharacter::getDirection(sf::Vector2u fromPoint, sf::Vector2u toPoint)

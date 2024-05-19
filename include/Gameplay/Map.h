@@ -27,6 +27,8 @@ class Map : public sf::Drawable, public sf::Transformable
 
     std::vector<BasePlayer *> players; // вектор указателей на всех игроков (необходимо для итерации по игрокам)
 
+    sf::Clock moneyUpdateClock;
+
   public:
     Map();
 
@@ -35,6 +37,10 @@ class Map : public sf::Drawable, public sf::Transformable
     sf::Vector2u getTileIndex(const sf::Vector2u &point, const Camera &camera) const;
     sf::IntRect getViewCoordinates(const sf::View &view) const;
     sf::Rect<unsigned int> getTilesToDraw(const sf::IntRect &viewCoordinates) const;
+
+    const Player &getPlayer() const;
+    const Bot &getBot() const;
+    std::unique_ptr<BaseUnit> *getCursor() const;
 
     void handleEvent(const sf::Event &event, const Camera &camera);
     void update();

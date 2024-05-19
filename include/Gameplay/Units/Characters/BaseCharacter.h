@@ -10,6 +10,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Assets.h"
 #include "Gameplay/Units/BaseUnit.h"
 
 /// @brief Свойства действия
@@ -17,7 +18,7 @@ class ActionProperties
 {
   public:
     sf::Time animationTimeout; // таймаут переключения кадра
-    uint8_t frames; // число кадров
+    uint8_t frames;            // число кадров
 
     ActionProperties(sf::Time animationTimeout, uint8_t frames);
     ActionProperties() : ActionProperties(sf::Time(), 0)
@@ -28,8 +29,7 @@ class ActionProperties
 /// @brief Базовый класс персонажа
 class BaseCharacter : public BaseUnit
 {
-  private:
-    static const unsigned int initialHP = 100;
+    static const unsigned int maxHP = 100;
     static const unsigned int damage = 20;
 
   protected:
@@ -48,15 +48,12 @@ class BaseCharacter : public BaseUnit
         Left
     };
 
-    std::map<Action, ActionProperties> animationProperties{
-        {Action::Idle, {sf::milliseconds(1000), 2}},
-        {Action::Walk, {sf::milliseconds(200), 4}},
-        {Action::Attack, {sf::milliseconds(200), 3}}};
+    std::map<Action, ActionProperties> animationProperties{{Action::Idle, {sf::milliseconds(1000), 2}},
+                                                           {Action::Walk, {sf::milliseconds(200), 4}},
+                                                           {Action::Attack, {sf::milliseconds(200), 3}}};
 
     float speed = 3.f; // скорость перемещения - число проходимых за секунду клеток
     std::deque<sf::Vector2u> path; // текущий маршрут
-
-    const sf::Texture &texture = Assets::getInstance().defaultCharacter;
 
     Action action = Action::Idle;          // текущее действие
     Direction direction = Direction::Down; // направление взгляда
@@ -68,24 +65,28 @@ class BaseCharacter : public BaseUnit
     std::jthread attackThread;   // поток атаки
 
   public:
-    BaseCharacter(sf::Vector2u position, unsigned int hp = initialHP);
+    BaseCharacter(sf::Vector2u position, unsigned int hp = BaseCharacter::maxHP,
+                  unsigned int maxHP = BaseCharacter::maxHP,
+                  const sf::Texture &texture = Assets::getInstance().defaultCharacter,
+                  sf::IntRect area = sf::IntRect(0, 0, SPRITE_SIZE_PX, SPRITE_SIZE_PX));
     ~BaseCharacter() = default; // требуется для умного указателя
 
-    virtual void moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
-                        bool attackThreadClosureRequired = true,
-                        bool stopAtNeighborTile = false); // перемещение в указанную позицию
-    virtual void attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<bool(sf::Vector2u)> isTileFree);
+    void moveTo(sf::Vector2u targetPosition, std::function<bool(sf::Vector2u)> isTileFree,
+                bool attackThreadClosureRequired = true,
+                bool stopAtNeighborTile = false); // перемещение в указанную позицию
+    void attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<bool(sf::Vector2u)> isTileFree);
 
-    virtual float getSpeed() const;
-    virtual void setSpeed(float speed);
-    virtual std::deque<sf::Vector2u> getPath() const;
-    virtual void setPath(std::deque<sf::Vector2u> path);
+    float getSpeed() const;
+    std::deque<sf::Vector2u> getPath() const;
+
+    void setSpeed(float speed);
+    void setPath(const std::deque<sf::Vector2u> &path);
 
     void stopMovementThread();
     void stopAttackThread();
 
+    virtual void updateArea();
     virtual void update(); // обновление состояний
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override; // отрисовка клетки
 
     static Direction getDirection(sf::Vector2u fromPoint, sf::Vector2u toPoint);
 };
