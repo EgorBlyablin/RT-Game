@@ -12,14 +12,11 @@
 
 Map::Map() : player(), bot()
 {
-    std::shared_ptr<BaseTile> cliff = std::make_shared<Cliff>(), tile = std::make_shared<BaseTile>();
+    std::shared_ptr<BaseTile> cliff = std::make_shared<Cliff>();
 
     for (int i = 0; i < MAPSIZE; i++)
         for (int j = 0; j < MAPSIZE; j++)
-            if ((i + j) % 2)
-                tiles[i][j] = cliff;
-            else
-                tiles[i][j] = tile;
+            tiles[i][j] = cliff;
 
     players = {static_cast<BasePlayer *>(&player), static_cast<BasePlayer *>(&bot)};
 }
@@ -47,9 +44,6 @@ sf::Vector2u Map::getTileIndex(const sf::Vector2u &point, const Camera &camera) 
 
 sf::IntRect Map::getViewCoordinates(const sf::View &view) const
 {
-    std::cout << (view.getCenter() + (view.getSize() / 2.f)).x << ' ' << (view.getCenter() + (view.getSize() / 2.f)).y
-              << '\n';
-
     return sf::IntRect(static_cast<sf::Vector2i>(view.getCenter() - (view.getSize() / 2.f)),
                        static_cast<sf::Vector2i>(view.getCenter() + (view.getSize() / 2.f)));
 }
@@ -60,6 +54,21 @@ sf::Rect<unsigned int> Map::getTilesToDraw(const sf::IntRect &viewCoordinates) c
         std::max(0, viewCoordinates.left / TILE_SIZE_PX), std::max(0, viewCoordinates.top / TILE_SIZE_PX),
         std::min(MAPSIZE, (int)std::ceil((float)(viewCoordinates.width - viewCoordinates.left) / TILE_SIZE_PX) + 1),
         std::min(MAPSIZE, (int)std::ceil((float)(viewCoordinates.height - viewCoordinates.top) / TILE_SIZE_PX) + 1));
+}
+
+const Player &Map::getPlayer() const
+{
+    return player;
+}
+
+const Bot &Map::getBot() const
+{
+    return bot;
+}
+
+std::unique_ptr<BaseUnit> *Map::getCursor() const
+{
+    return cursor;
 }
 
 void Map::handleEvent(const sf::Event &event, const Camera &camera)
@@ -105,16 +114,20 @@ void Map::handleEvent(const sf::Event &event, const Camera &camera)
 void Map::update()
 {
     for (auto &player : players)
+    {
+        player->update();
+
         for (auto unitIterator = player->getUnits().begin(); unitIterator != player->getUnits().end();)
         {
-            if (unitIterator->get()->getHP() > 0)
+            if ((*unitIterator)->getHP() > 0)
             {
-                unitIterator->get()->update();
+                (*unitIterator)->update();
                 unitIterator++;
             }
             else
                 unitIterator = player->getUnits().erase(unitIterator);
         }
+    }
 }
 
 void Map::drawTiles(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<unsigned int> tilesToDraw) const
@@ -181,6 +194,8 @@ void Map::drawRoute(sf::RenderTarget &target, sf::RenderStates states, sf::Rect<
 
 void Map::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+    states.transform *= getTransform();
+
     sf::View camera = target.getView();
 
     sf::IntRect viewCoordinates = getViewCoordinates(camera); // положение камеры в игровом мире

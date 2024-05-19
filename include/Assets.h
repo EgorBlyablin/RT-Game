@@ -13,18 +13,21 @@ class Assets
   public:
     sf::Font font; // шрифт
 
-    sf::Texture defaultTexture, defaultCharacter, defaultBuilding, cliffTexture; // текстуры
+    sf::Texture defaultTexture, defaultCharacter, defaultBuilding, cliffTexture, essentialTextures; // текстуры
 
   public:
     void Load() // загрузка ассетов
     {
         font.loadFromFile("assets/fonts/Arial.ttf");
+        font.setSmooth(false);
 
         defaultTexture.loadFromFile("assets/Sprites/Templates/16x16Small.png");
         defaultCharacter.loadFromFile("assets/Sprites/Characters/Workers/FarmerTemplate.png");
         defaultBuilding.loadFromFile("assets/Sprites/Buildings/Wood/Houses.png");
 
         cliffTexture.loadFromFile("assets/Sprites/Ground/Cliff.png");
+
+        essentialTextures.loadFromFile("assets/Sprites/User Interface/Icons-Essentials.png");
     }
 
     static Assets &getInstance() // получение синглтона

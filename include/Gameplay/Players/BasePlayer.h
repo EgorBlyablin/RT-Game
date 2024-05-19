@@ -13,8 +13,7 @@ class BasePlayer
 {
   protected:
     std::vector<std::unique_ptr<BaseUnit>> units; // вектор умных указателей на юнитов
-    std::unique_ptr<Base> *base; // указатель на базу игрока (для проверки поражения)
-    unsigned int money = 0; // кредиты игрока
+    sf::Clock newUnitTimer;                       // таймер создания нового юнита
 
   public:
     BasePlayer() = default;

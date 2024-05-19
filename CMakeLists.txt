@@ -1,13 +1,13 @@
 include(FetchContent)
 
 cmake_minimum_required(VERSION 3.22)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra -pedantic")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_REQUIRED ON)
 
 project(RTetris)
 
-set(SFML_VERSION 2.5.1)
+set(SFML_VERSION 2.6.1)
 set(IMGUI_VERSION 1.90)
 
 # SFML Fetch
@@ -43,7 +43,6 @@ message("-- Adding source files to build")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_executable(RTetris ${SOURCES})
 message("-- Adding source files to build - done")
-target_compile_options(RTetris PRIVATE -Wall -Wextra -pedantic)
 
 message("-- Linking external libraries")
 target_link_libraries(RTetris

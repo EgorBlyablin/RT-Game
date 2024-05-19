@@ -6,15 +6,11 @@
 /// @brief База игрока (игра оканчивается при ее уничтожении)
 class Base : public BaseBuilding
 {
-  private:
-    static const unsigned int initialHP = 1000;
-
   public:
-    Base(sf::Vector2u position, unsigned int hp = initialHP);
-    ~Base() = default; // требуется для умного указателя
+    static const unsigned int maxHP = 1000;
 
-    virtual void update() override; // обновление состояний
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override; // отрисовка клетки
+    Base(sf::Vector2u position, unsigned int hp = maxHP);
+    ~Base() = default; // требуется для умного указателя
 };
 
 #endif

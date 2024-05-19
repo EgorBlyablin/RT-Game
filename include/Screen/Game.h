@@ -6,18 +6,17 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "Gameplay/Camera.h"
+#include "Gameplay/HUD.h"
 #include "Gameplay/Map.h"
 #include "Screen/BaseScreen.h"
-#include "UI/Button.h"
 
 /// @brief Класс игры
 class Game : public BaseScreen
 {
   private:
-    std::vector<Button> buttons; // кнопки
-
     Map map;       // игровое поле
     Camera camera; // камера
+    HUD hud;
 
   public:
     Game(sf::Vector2f windowSize);
