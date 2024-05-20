@@ -5,23 +5,23 @@
 #ifndef RTETRIS_SETTINGS_H
 #define RTETRIS_SETTINGS_H
 
+#include <functional>
+
+#include <SFML/Graphics.hpp>
 
 #include "BaseScreen.h"
 
-class Settings: public BaseScreen
+class Settings : public BaseScreen
 {
-  private:
-    static bool settingsActive;
   public:
-    Settings();
-    virtual void handleEvent(const sf::Event &event) override;
-    virtual void update() override;
-    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-
-    static bool isSettingsActive();
-    static void setSettingsActive(bool settingsActive);
+    Settings(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen,
+             sf::RenderWindow &window);
 
     void apply();
+
+    void update() override;
+    void handleEvent(const sf::Event &event) override;
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };
 
 #endif // RTETRIS_SETTINGS_H
