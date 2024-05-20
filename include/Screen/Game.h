@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <functional>
 #include <vector>
 
 #include <SFML/System/Vector2.hpp>
@@ -20,11 +19,11 @@ class Game : public BaseScreen
     HUD hud;
 
   public:
-    Game(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen);
+    Game(sf::Vector2f windowSize);
 
-    void handleEvent(const sf::Event &event) override;
-    void update() override;
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    virtual void handleEvent(const sf::Event &event) override;
+    virtual void update() override;
+    virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };
 
 #endif
