@@ -20,7 +20,7 @@ class Game : public BaseScreen
     HUD hud;
 
   public:
-    Game(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen);
+    Game(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen, sf::RenderWindow &window);
 
     void handleEvent(const sf::Event &event) override;
     void update() override;

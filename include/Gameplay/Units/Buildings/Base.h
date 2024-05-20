@@ -9,7 +9,7 @@ class Base : public BaseBuilding
   public:
     static const unsigned int maxHP = 1000;
 
-    Base(sf::Vector2u position, unsigned int hp = maxHP);
+    Base(sf::Vector2u position, unsigned int hp = Base::maxHP);
     ~Base() = default; // требуется для умного указателя
 };
 

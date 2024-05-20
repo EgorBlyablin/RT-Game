@@ -12,7 +12,7 @@
 
 Settings::Settings(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen,
                    sf::RenderWindow &window)
-    : BaseScreen(windowSize, setScreen)
+    : BaseScreen(windowSize, setScreen, window)
 {
     std::map<std::string, std::function<void(void)>> callBacks{
         {"640x350", [&window] { window.setSize(sf::Vector2u(640, 350)); }},
