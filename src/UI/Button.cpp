@@ -12,7 +12,6 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size, const std
     this->text.setFont(font);
     this->text.setCharacterSize(characterSize); // установка размера текста
 
-
     setPosition(position); // позиционирование кнопки
 }
 
@@ -21,6 +20,8 @@ void Button::setBackgroundColor(const sf::Color &color, const sf::Color &onClick
     backgroundColor = color;
     backgroundColorOnClick = onClick;
     backgroundColorOnHover = onHover;
+
+    updateColor();
 }
 
 void Button::setBackgroundColor(const sf::Color &color, const sf::Color &onClick)
@@ -38,6 +39,8 @@ void Button::setTextColor(const sf::Color &color, const sf::Color &onClick, cons
     textColor = color;
     textColorOnClick = onClick;
     textColorOnHover = onHover;
+
+    updateColor();
 }
 
 void Button::setTextColor(const sf::Color &color, const sf::Color &onClick)
@@ -71,19 +74,13 @@ void Button::updateColor()
 
 void Button::setPosition(sf::Vector2f position)
 {
-
     shape.setPosition(position); // позиционирование заднего фона
 
-
-
-    text.setOrigin(
-        text.getGlobalBounds().left,
-        text.getGlobalBounds().top); // обновление исходной точки текста (т.к. размеры текста могли измениться)
-    text.setPosition(shape.getPosition() +
-                     (shape.getSize() - sf::Vector2f(text.getGlobalBounds().width, text.getGlobalBounds().height)) /
-                         2.f); // центрирование текста на кнопке
+    // обновление исходной точки текста (т.к. размеры текста могли измениться)
+    text.setOrigin(text.getGlobalBounds().getPosition());
+    // центрирование текста на кнопке
+    text.setPosition(shape.getPosition() + (shape.getSize() - text.getGlobalBounds().getSize()) / 2.f);
 }
-
 
 void Button::handleEvent(const sf::Event &event)
 {
@@ -92,34 +89,34 @@ void Button::handleEvent(const sf::Event &event)
     case sf::Event::MouseButtonReleased: // кнопка отпущена
         if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
-            if (shape.getGlobalBounds().contains(
-                    event.mouseButton.x,
-                    event.mouseButton
-                        .y)) // данная проверка проводится для того, чтобы случайно нажав на кнопку была возможность не
-                             // активировать ее, если отвести курсор в другое место и только потом отпустить
+            if (isPressed and shape.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+            // данная проверка проводится для того, чтобы случайно нажав на кнопку была возможность не
+            // активировать ее, если отвести курсор в другое место и только потом отпустить
             {
-                updateColor();
                 callback();
-            }
-            isPressed = false;
-            if (isHovered){//сделала так, потому что после смены экрана текщая функция продолжает выполлняться, но при этом
-                //при вызове любой функции кнопки кидается segmentation fault, то есть метод updateColor() вызывается с исключением
-                shape.setFillColor(backgroundColorOnHover);
-                text.setFillColor(textColorOnHover);
+
+                isPressed = false;
+                updateColor();
             }
         }
+
         break;
     case sf::Event::MouseButtonPressed: // кнопка нажата
-        isPressed = (event.mouseButton.button == sf::Mouse::Button::Left) and
-                    (shape.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y));
-        updateColor();
+        if (shape.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
+        {
+            isPressed = true;
+            updateColor();
+        }
+        else
+            isPressed = false;
+
         break;
     case sf::Event::MouseMoved: // положение курсора изменилось
         isHovered = shape.getGlobalBounds().contains(event.mouseMove.x, event.mouseMove.y);
         updateColor();
+
         break;
     default:
-        updateColor();
         break;
     }
 }
@@ -131,4 +128,3 @@ void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(shape, states);
     target.draw(text, states);
 }
-void Button::apply(){}

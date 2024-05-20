@@ -5,9 +5,10 @@
 
 #define HUD_WIDTH_RATIO 0.3f
 
-Game::Game(sf::Vector2f windowSize)
-    : map(), camera(sf::Vector2f(MAPSIZE * TILE_SIZE_PX, MAPSIZE * TILE_SIZE_PX), 1.f, 1.f, 10.f, 1.1f,
-                    sf::Vector2f(windowSize.x * (1 - HUD_WIDTH_RATIO), windowSize.y)),
+Game::Game(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen)
+    : BaseScreen(windowSize, setScreen), map(),
+      camera(sf::Vector2f(MAPSIZE * TILE_SIZE_PX, MAPSIZE * TILE_SIZE_PX), 1.f, 1.f, 10.f, 1.1f,
+             sf::Vector2f(windowSize.x * (1 - HUD_WIDTH_RATIO), windowSize.y)),
       hud(&map, &camera, sf::Vector2f(windowSize.x * HUD_WIDTH_RATIO, windowSize.y))
 {
     camera.setViewport(sf::FloatRect(0.f, 0.f, 1 - HUD_WIDTH_RATIO, 1.f));
