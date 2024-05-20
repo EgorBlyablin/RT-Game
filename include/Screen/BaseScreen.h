@@ -1,7 +1,6 @@
 #ifndef BASE_SCREEN_H
 #define BASE_SCREEN_H
 
-#include <functional>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -17,23 +16,7 @@ class BaseScreen : public sf::Drawable, public sf::Transformable
   protected:
     std::vector<std::unique_ptr<Button>> buttons; // все кнопки экрана
 
-    sf::Vector2f windowSize;
-    std::function<void(std::unique_ptr<BaseScreen>)> setScreen;
-
-    bool isActive = false;
-
   public:
-    BaseScreen(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen)
-        : windowSize(windowSize), setScreen(setScreen)
-    {
-    }
-
-    sf::Vector2f getWindowSize() const;
-    bool getIsActive() const;
-
-    void setWindowSize(sf::Vector2f windowSize);
-    void setIsActive(bool isActive);
-
     virtual void handleEvent(const sf::Event &event) = 0; // обработка событий
     virtual void update() = 0;                            // обновление свойств
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const = 0; // отрисовка

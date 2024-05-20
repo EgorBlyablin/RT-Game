@@ -4,9 +4,6 @@
 int main()
 {
     Assets::getInstance().Load(); // Загружаем ресурсы
-
-    Application app;
-    app.run(); // Запускаем приложение
-
+    Application::getInstance().run();  // Запускаем приложение
     return 0;
 }
