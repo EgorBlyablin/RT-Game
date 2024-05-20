@@ -135,9 +135,6 @@ void BaseCharacter::attack(std::unique_ptr<BaseUnit> &targetUnit, std::function<
                 }
                 else
                 {
-                    while (targetUnit != nullptr)
-                        std::this_thread::yield();
-
                     while (movementThread.joinable() and not stopToken.stop_requested())
                         std::this_thread::yield();
                 }

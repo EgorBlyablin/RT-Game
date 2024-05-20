@@ -8,15 +8,15 @@
 
 Menu::Menu(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen,
            sf::RenderWindow &window)
-    : BaseScreen(windowSize, setScreen)
+    : BaseScreen(windowSize, setScreen, window)
 {
     std::unique_ptr<Button> startButton = std::make_unique<Button>(
         sf::Vector2f(windowSize.x * 0.425, windowSize.y * 0.1), sf::Vector2f(windowSize.x * 0.15, windowSize.y * 0.1),
-        "Play", Assets::getInstance().font, 30 * windowSize.y / 800, [windowSize, setScreen] {
-            setScreen(
-                std::make_unique<Game>(windowSize, [windowSize, setScreen](std::unique_ptr<BaseScreen> newScreen) {
-                    setScreen(std::move(newScreen));
-                }));
+        "Play", Assets::getInstance().font, 30 * windowSize.y / 800, [windowSize, setScreen, &window] {
+            setScreen(std::make_unique<Game>(
+                windowSize,
+                [windowSize, setScreen](std::unique_ptr<BaseScreen> newScreen) { setScreen(std::move(newScreen)); },
+                window));
         });
     startButton->setBackgroundColor(sf::Color(160, 160, 160), sf::Color(50, 50, 50), sf::Color(90, 90, 90));
     startButton->setTextColor(sf::Color(255, 255, 255));

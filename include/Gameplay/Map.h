@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -11,6 +12,7 @@
 #include "Gameplay/Players/Player.h"
 #include "Gameplay/Tiles/BaseTile.h"
 #include "Gameplay/Units/BaseUnit.h"
+#include "Screen/BaseScreen.h"
 
 #define MAPSIZE 20 // размер игрового поля (ширина и высота)
 #define TILE_SIZE_PX 16 // количество пикселей в одной клетке (определяется спрайтами)

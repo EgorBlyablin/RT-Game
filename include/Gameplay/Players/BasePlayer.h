@@ -19,6 +19,7 @@ class BasePlayer
     BasePlayer() = default;
     ~BasePlayer() = default;
 
+    const std::vector<std::unique_ptr<BaseUnit>> &getUnits() const;
     std::vector<std::unique_ptr<BaseUnit>> &getUnits();
 
     virtual void update();

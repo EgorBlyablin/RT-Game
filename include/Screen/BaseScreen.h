@@ -20,11 +20,14 @@ class BaseScreen : public sf::Drawable, public sf::Transformable
     sf::Vector2f windowSize;
     std::function<void(std::unique_ptr<BaseScreen>)> setScreen;
 
+    sf::RenderWindow &window;
+
     bool isActive = false;
 
   public:
-    BaseScreen(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen)
-        : windowSize(windowSize), setScreen(setScreen)
+    BaseScreen(sf::Vector2f windowSize, std::function<void(std::unique_ptr<BaseScreen>)> setScreen,
+               sf::RenderWindow &window)
+        : windowSize(windowSize), setScreen(setScreen), window(window)
     {
     }
 

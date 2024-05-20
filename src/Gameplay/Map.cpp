@@ -125,7 +125,12 @@ void Map::update()
                 unitIterator++;
             }
             else
-                unitIterator = player->getUnits().erase(unitIterator);
+            {
+                if (unitIterator != player->getUnits().begin())
+                    unitIterator = player->getUnits().erase(unitIterator);
+                else
+                    unitIterator++;
+            }
         }
     }
 }

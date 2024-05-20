@@ -1,12 +1,12 @@
 #include <iostream>
 
 #include "Gameplay/Players/BasePlayer.h"
-#include "Gameplay/Units/Buildings/Base.h"
-#include "Gameplay/Units/Characters/BaseCharacter.h"
-#include "Utilities/AStar.h"
+#include "Gameplay/Units/BaseUnit.h"
 
-#define UNIT_CREATION_SECONDS 20
-#define MAX_UNITS 5
+const std::vector<std::unique_ptr<BaseUnit>> &BasePlayer::getUnits() const
+{
+    return units;
+}
 
 std::vector<std::unique_ptr<BaseUnit>> &BasePlayer::getUnits()
 {

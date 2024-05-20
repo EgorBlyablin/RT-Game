@@ -65,8 +65,9 @@ void BaseUnit::draw(sf::RenderTarget &target, sf::RenderStates states) const
         background.setFillColor(sf::Color::Black);
 
         float hpRatio = (float)hp / maxHP;
-        sf::RectangleShape bar(sf::Vector2f(background.getGlobalBounds().width * hpRatio - HP_BAR_OUTLINE * 2,
-                                            background.getGlobalBounds().height - HP_BAR_OUTLINE * 2));
+        sf::RectangleShape bar(
+            sf::Vector2f(std::max(0.f, background.getGlobalBounds().width * hpRatio - HP_BAR_OUTLINE * 2),
+                         background.getGlobalBounds().height - HP_BAR_OUTLINE * 2));
         bar.setFillColor(sf::Color::Green);
 
         background.setPosition(sprite.getGlobalBounds().left, sprite.getGlobalBounds().top);
